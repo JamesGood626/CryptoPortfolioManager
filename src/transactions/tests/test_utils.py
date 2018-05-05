@@ -7,6 +7,7 @@ from ..models import (
     ProfitLossTransaction,
 )
 from portfolio.models import CryptoAsset
+from settings.models import FiatOption
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -14,6 +15,10 @@ User = get_user_model()
 
 class BuyOrderSaveTestCase(TestCase):
     def setUp(self):
+        FiatOption.objects.create(
+            abbreviated_currency='USD',
+            currency='United States Dollar',
+        )
         user = User.objects.create(
             username='good7',
             password='good7',
@@ -57,6 +62,10 @@ class BuyOrderSaveTestCase(TestCase):
 
 class SellOrderSaveTestCase(TestCase):
     def setUp(self):
+        FiatOption.objects.create(
+            abbreviated_currency='USD',
+            currency='United States Dollar',
+        )
         user = User.objects.create(
             username='good7',
             password='good7',
@@ -87,7 +96,7 @@ class SellOrderSaveTestCase(TestCase):
         self.assertEqual(crypto_asset.initial_investment_btc, Decimal('111.007'))
         self.assertEqual(crypto_asset.initial_investment_fiat, 370007)
 
-    def test_buy_order_sell_fulfilled_set_to_true(self):
+    def test_buy_order_sell_fulfilled_set_to_true_and_crypto_asset_deleted_if_quantity_is_zero(self):
         user = User.objects.get(username='good7')
         SellOrder.objects.create(
             user=user,
@@ -98,12 +107,10 @@ class SellOrderSaveTestCase(TestCase):
             exchange_fee_btc=200,
             exchange_fee_fiat=200,
         )
-        crypto_asset = CryptoAsset.objects.get(user=user)
+        crypto_asset = CryptoAsset.objects.filter(user=user, ticker='LUX')
         buy_order = BuyOrder.objects.get(user=user)
         self.assertEqual(buy_order.sell_order_fulfilled, True)
-        self.assertEqual(crypto_asset.quantity, 0)
-        self.assertEqual(crypto_asset.initial_investment_btc, 0)
-        self.assertEqual(crypto_asset.initial_investment_fiat, 0)
+        self.assertEqual(crypto_asset.count(), 0)
 
     def test_sell_order_quantity_remainder_carries_over(self):
         user = User.objects.get(username='good7')

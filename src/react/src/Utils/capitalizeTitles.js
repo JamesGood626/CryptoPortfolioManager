@@ -5,7 +5,6 @@ const capitalizeTitles = {
                       if (stringArr.length > 1) {
                         let newStringArr = []
                         for(let i=0; i < stringArr.length; i++) {
-                          console.log(stringArr[i])
                           let refinedString = this.capitalize(stringArr[i])
                           newStringArr.push(refinedString)
                         }

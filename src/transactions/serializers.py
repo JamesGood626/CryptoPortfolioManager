@@ -103,3 +103,19 @@ class ProfitLossTransactionCreateSerializer(ModelSerializer):
             'exchange_fee_fiat',
             'gain_loss_percentage',
         ]
+
+
+class ProfitLossTransactionListSerializer(ModelSerializer):
+    class Meta:
+        model = ProfitLossTransaction
+        fields = [
+            'ticker',
+            'quantity_sold',
+            'total_buy_price_btc',
+            'total_buy_price_fiat',
+            'total_sell_price_btc',
+            'total_sell_price_fiat',
+            'exchange_fee_btc',
+            'exchange_fee_fiat',
+            'gain_loss_percentage',
+        ]

@@ -10,7 +10,7 @@ const Section = styled.section`
 `
 
 const Label = styled.label`
-  color: #371732;
+  color: #fcfafa;
   position: relative;
   top: 2rem;
 `
@@ -19,11 +19,11 @@ const StyledInput = styled.input`
   position: relative;
   text-align: center;
   width: 14rem;
-  height: 2.5rem;
+  height: 2rem;
   background-color: rgba(0,0,0,0);
   padding: 0.625rem;
   box-sizing: border-box;
-  border: 2px solid #371732;
+  border-bottom: 2px solid #fcfafa;
   border-top: none;
   border-right:none;
   border-left: none;
@@ -33,8 +33,7 @@ const StyledInput = styled.input`
 
   @media (min-width: 900px) {
     width: 16rem;
-    margin: 0;
-    margin-bottom: 2rem;
+    margin: 0 0 0.5rem 0;
   }
 
   &:focus {
@@ -69,57 +68,85 @@ const FormError = styled.div`
 
 // 3/27/18 Also need to account for when the form unmounts between Buy/Sell option
 // to clear the values that were entered in the fields of the unmounting form
-class Input extends Component {
-  constructor(props) {
-    super(props)
-    
-    this.state = {
-      focused: false
-    }
-    console.log(this.props.randomProp)
-    this.toggleFocused = this.toggleFocused.bind(this)
+const Input = ({ input, label, name, meta: { error, touched } }) => {
+  
+  const hidden = {
+    'visibility': 'hidden'
   }
-
-  toggleFocused() {
-    this.setState((prevState, state) => ({
-      focused: !prevState.focused
-    }))
+  var focused = false
+  
+  const toggleFocused = () => {
+    focused = !focused
+    console.log(focused)
+    return focused
   }
-
-  render() {
-    const { input, label, list, touched, error } = this.props
-    const { focused } = this.state
-    const hiddenLabel = {
-      'visibility': 'hidden'
-    }
-    return (
-      <Section OnFocus={ this.toggleFocused }>
-         <Label style={ focused ? hiddenLabel : null }>{ label }</Label> 
-        <StyledInput { ...input } 
-                     list={ list }
-                     onFocus={ 
-                      event => { 
-                        input.onFocus(event)
-                        if (event.target.value === '') {
-                          this.toggleFocused()
-                        }
-                      } 
-                    } 
-                     onBlur={ 
-                      event => { 
-                        input.onBlur(event)
-                        if (event.target.value === '') {
-                          this.toggleFocused()
-                        }
-                      }
-                    }
-        />
-        <FormError>
-          { touched && error }
-        </FormError> 
-      </Section>
-    )
-  }
+  return (
+    <Section onFocus={ toggleFocused }>
+      <Label style={ focused ? hidden : null}>{ label }</Label>  
+      <StyledInput {...input}></StyledInput>
+      <FormError>
+        { touched && error }
+      </FormError> 
+    </Section>
+  )
 }
 
 export default Input
+
+
+
+
+// class Input extends Component {
+//   constructor(props) {
+//     super(props)
+    
+//     this.state = {
+//       focused: false
+//     }
+//     console.log(this.props)
+//     this.toggleFocused = this.toggleFocused.bind(this)
+//   }
+
+//   toggleFocused() {
+//     this.setState((prevState, state) => ({
+//       focused: !prevState.focused
+//     }))
+//   }
+
+//   render() {
+//     const { input, label, list, touched, error } = this.props
+//     const { focused } = this.state
+//     const hiddenLabel = {
+//       'visibility': 'hidden'
+//     }
+//     return (
+//       <Section OnFocus={ this.toggleFocused }>
+//         <Label style={ focused ? hiddenLabel : null }>{ label }</Label> 
+//         <StyledInput { ...input } 
+//                      list={ list }
+//                      onFocus={ 
+//                       event => { 
+//                         input.onFocus(event)
+//                         if (event.target.value === '') {
+//                           this.toggleFocused()
+//                         }
+//                       } 
+//                     } 
+//                      onBlur={ 
+//                       event => { 
+//                         input.onBlur(event)
+//                         if (event.target.value === '') {
+//                           this.toggleFocused()
+//                         }
+//                       }
+//                     }
+//         />
+//         <FormError>
+//           { touched && error }
+//         </FormError> 
+//       </Section>
+//     )
+//   }
+// }
+
+// export default Input

@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import Header from '../../SharedComponents/FormComponents/header'
 import Form from './Form'
 
+import PieChart from '../../SharedComponents/D3Components/PieChart'
+
 
 const ContainerDiv= styled.div`
   display: flex;
@@ -47,36 +49,48 @@ const BuyButton = styled.button`
   font-size: 1rem;
   line-height: 2.8rem;
   text-align: center;
-  background-color: #fcfafa;
-  border: solid #371732 .1rem;
+  color: #fcfafa;
+  background: #aaa;
+  border-top-right-radius: 14px;
+  border-bottom-left-radius: 14px;
+  box-shadow: 2px 2px 3px #ccc;
 
   &:hover {
-    color: #fcfafa;
-    background-color: #4eb089;
-    border: solid #fcfafa .1rem;
+    background: #17CA4A;
+  }
+  &:focus {
+    outline: 0;
   }
 `
 
 const SellButton = styled.button`
-  width: 8rem;
+  width: 7rem;
   height: 2.8rem;
   margin: 0;
   margin-left: 2rem;
   font-size: 1rem;
   line-height: 2.8rem;
   text-align: center;
-  background-color: #fcfafa;
-  border: solid #371732 .1rem;
+  color: #fcfafa;
+  background: #aaa;
+  border-top-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  box-shadow: 2px 2px 3px #ccc;
 
   &:hover {
-    color: #fcfafa;
-    background-color: #4eb089;
-    border: solid #fcfafa .1rem;
+    background: #17CA4A;
+  }
+  &:focus {
+    outline: 0;
   }
 `
 
+type State = {
+  buyOrder: boolean,
+  sellOrder: boolean
+}
 // ComponentWillMount will make an API call to the Python backend so that it may query
-class Update extends Component {
+class Update extends Component<State> {
   constructor(props) {
     super(props)
     this.state = {
@@ -115,9 +129,11 @@ class Update extends Component {
   render() {
     const { buyOrder, sellOrder } = this.state
     const selectedStyle = {
-      'color': '#fcfafa',
-      'backgroundColor': '#371732',
-      'border': 'solid #fcfafa .1rem'
+      'color': '#fffbfc',
+      'background': '#c21500',
+      'background': '-webkit-linear-gradient(to right, #FFA900, #c21500)',
+      'background': 'linear-gradient(to right, #FFA900, #c21500)',
+      'border': 'solid #fffbfc .1rem'
     }
 
     return (
@@ -127,6 +143,7 @@ class Update extends Component {
           <BuyButton style={ buyOrder ? selectedStyle : null } onClick={ sellOrder ? this.selectOrderType : null }>Buy</BuyButton>
           <SellButton style={ sellOrder ? selectedStyle : null } onClick={ buyOrder ? this.selectOrderType : null }>Sell</SellButton>
         </OrderTypeDiv>
+        {/* <PieChart/> */}
         <Header>Add a New Transaction</Header>
         <Form buyOrder={ buyOrder } sellOrder={ sellOrder }/>
       </ContainerDiv>

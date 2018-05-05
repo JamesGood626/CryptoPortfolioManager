@@ -3,37 +3,29 @@ import styled from 'styled-components'
 
 
 const Button = styled.button`
-  margin-bottom: 1.4rem;
-  margin-top: 2rem;
-  height: 3.4rem;
-  padding: 0;
-  // padding: 1.2rem;
-  width: 8rem;
-  background-color: rgba(0,0,0,0);
-  border: solid #371732 .1rem;
-  color: #371732;
-  // box-shadow: inset 0 0 0 0 #35e0f0;
-  // transition: .8s ease-out;
+  width: 7rem;
+  height: 2.8rem;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 2.8rem;
+  text-align: center;
+  color: #c15200;
+  background: #fcfafa;
+  border-top-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  box-shadow: 2px 2px 3px #ccc;
 
-
-  @media (min-width: 900px) {
-    height: 5.2rem;
-    width: 10rem;
-  }
-  
   &:hover {
     color: #fcfafa;
-    background-color: #4eb089;
-    border: solid #fcfafa .1rem;
+    background: #17CA4A;
   }
-
-  &:hover {
-    // box-shadow: inset 0 0 3.125rem 3.125rem #35e0f0; 
+  &:focus {
+    outline: 0;
   }
 `
 
-const SubmitButton = (props) => {
-  return <Button type="submit">{ props.children }</Button>
+const SubmitButton = ({ children, isDisabled }) => {
+  return <Button type="submit" disabled={isDisabled}>{ children }</Button>
 }
 
 export default SubmitButton

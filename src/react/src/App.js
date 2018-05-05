@@ -6,6 +6,9 @@ import { TransitionGroup, Transition } from 'react-transition-group'
 import { TweenMax } from 'gsap'
 import styled from 'styled-components'
 
+import RequireAuth from './Utils/requireAuth'
+import PieChart from './SharedComponents/D3Components/PieChart'
+
 import Navbar from './Pages/Navbar'
 import CurrencyDropDown from './SharedComponents/FormComponents/currencyDropDown'
 import PortfolioPerformance from './Pages/PortfolioPerformance'
@@ -22,25 +25,23 @@ import AccountIcon from './SVGIcons/AccountIcon'
 import SettingsIcon from './SVGIcons/SettingsIcon'
 import LogOutIcon from './SVGIcons/LogOutIcon'
 
-//Somehow z-index 1000 fixed the overlapping of the navbar
+
 const Section = styled.section`
-  position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-    padding-bottom: 2rem;
-    margin: 0;
-    padding: 0;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  padding-bottom: 2rem;
+  margin: 0;
+  padding: 0;
+  
 
   // @media (min-width: 600px) {
   //   background-color: limegreen;
   // }
   
   @media (min-width: 900px) {
-    width: 80vw;
+    // compensates for navbar width
+    max-width: calc(100vw - 16rem);
   }
 `
 
@@ -48,15 +49,13 @@ const Div = styled.div`
   display: flex;
   width: 100vw;
   height: 100vh;
-  margin: 0;
-  padding: 0;
-  background-color: #dadad9;
   overflow: none;
 
   @media (max-width: 900px) {
     flex-direction: column;
   }
 `
+
 
 // Okay, so this.props.history.length is a reliable source for determining the
 // size of the routing stack
@@ -72,7 +71,6 @@ class App extends Component {
     this.enterTransition = this.enterTransition.bind(this)
     this.leaveTransition = this.leaveTransition.bind(this)
   }
-
 
   // action ftw, successfully manages forward and backward routing navigation animations.
   enterTransition(node) {
@@ -119,7 +117,7 @@ class App extends Component {
     return (
       <Div>
         <Navbar location={ location } menuItems={ navItems }/>
-        <CurrencyDropDown/>
+        {/* <CurrencyDropDown/> */}
         <TransitionGroup>
           <Transition
             in={ this.props.in }
@@ -130,7 +128,7 @@ class App extends Component {
             onEnter={ this.enterTransition }
             onExit={ this.leaveTransition }  
           >
-            <Section> 
+            <Section>
               <Switch location={ location }>
                 <Route exact path="/portfolio/performance" component={ PortfolioPerformance }/>
                 <Route exact path="/portfolio/update" component={ Update }/>

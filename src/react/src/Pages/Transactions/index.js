@@ -2,64 +2,76 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 
 import { connect } from 'react-redux'
-import { getBuyOrderList, getSellOrderList } from '../../actions'
+import { getBuyOrderList, getSellOrderList, getProfitLossTransactionList } from '../../actions'
 
 import Header from './header'
 import TransactionTable from './transactionTable'
 
 import capitalizeTitles from '../../Utils/capitalizeTitles'
 
+// ******************* To-Do *************************
+// Need to handle the exception for when there is no pl_transactions....
+// LOOK INTO ADVANCED REACT PATTERNS AND POSSIBLY REFACTOR THE CURRENT TransactionTable design
 
 const ContainerDiv = styled.div`
   display: flex;
   flex-direction: column;
-  width: 48rem;
-  height: 36rem;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+
+  @media (min-width: 900px) {
+    width: 100%;
+  }
 `
 
 const OrderTypeDiv = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  justify-content: space-around;
   height: 2.8rem;
-  width: 48rem;
+  width: 100vw;
   margin: 0;
-  margin-bottom: 1.4rem;
+  margin-bottom: 2rem;
   padding: 0;
-`
 
-const DisplaySelectButton = styled.button`
-  width: 8rem;
-  height: 2.8rem;
-  margin: 0;
-  font-size: 1rem;
-  line-height: 2.8rem;
-  text-align: center;
-  background-color: #fcfafa;
-  border: solid #371732 .1rem;
-
-  &:hover {
-    color: #fcfafa;
-    background-color: #4eb089;
-    border: solid #fcfafa .1rem;
+  @media (min-width: 900px) {
+    width: 48vw;
   }
 `
 
-const SellButton = styled.button`
-  width: 7rem;
-  height: 2.8rem;
+const TableContainerDiv = styled.div`
+  display: inline-flex;
+  width: 100%;
+`
+
+const DisplaySelectButton = styled.button`
+  width: 5.5rem;
+  height: 2.2rem;
   margin: 0;
-  margin-left: 2rem;
-  font-size: 1rem;
-  line-height: 2.8rem;
+  font-size: 2vh;
+  line-height: 2.2rem;
   text-align: center;
-  background-color: #fcfafa;
-  border: solid #371732 .1rem;
+  color: #fcfafa;
+  background: #aaa;
+  border-top-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  box-shadow: 2px 2px 3px #ccc;
 
   &:hover {
-    color: #fcfafa;
-    background-color: #4eb089;
-    border: solid #fcfafa .1rem;
+    background: #17CA4A;
+  }
+  &:focus {
+    outline: 0;
+  }
+
+  @media (min-width: 900px) {
+    width: 7rem;
+    height: 2.8rem;
+    line-height: 2.8rem;
+  }
+  @media (min-height: 740px) {
+    font-size: 0.9rem;
   }
 `
 
@@ -72,7 +84,8 @@ class Transactions extends Component {
       displaySellOrders: false,
       displayActualizedPL: false,
       buyOrderTitles: [],
-      sellOrderTitles: []
+      sellOrderTitles: [],
+      profitLossTransactionTitles: []
     }
 
     this.selectDisplayType = this.selectDisplayType.bind(this)
@@ -80,15 +93,14 @@ class Transactions extends Component {
     this.toggleDisplayBuy = this.toggleDisplayBuy.bind(this)  
     this.toggleDisplaySell = this.toggleDisplaySell.bind(this)
     this.toggleDisplayActualizedPL = this.toggleDisplayActualizedPL.bind(this)
+    this.capitalizeTitleArray = this.capitalizeTitleArray.bind(this)
   }
 
   componentDidMount() {
-    if (this.props.buyOrderList || this.props.sellOrderList) {
-      this.props.getBuyOrderList()
-      this.props.getSellOrderList()
-    }
+    this.props.getBuyOrderList()
+    this.props.getSellOrderList()
+    this.props.getProfitLossTransactionList()
   }
-
 
   toggleDisplayBuy() {
     this.setState((prevState, state) => ({
@@ -134,34 +146,80 @@ class Transactions extends Component {
     }
   }
 
-  // Caught in an infinite loop, need to troubleshoot...
+  // Currently causes infinite loop
+  // if (this.props.buyOrderList[0] && this.state.buyOrderTitles.length === 0) {
+  //   this.capitalizeTitleArray(this.props.buyOrderList[0], this.state.buyOrderTitles, buyOrderTitles)
+  // }
+  capitalizeTitleArray(modelObj, titleState, titleStateKey) {
+      let keyList = Object.getOwnPropertyNames(modelObj)
+      let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
+      this.setState((prevState, state) => ({
+        titleStateKey: newTitleArr
+      }))
+  }
 
   render() {
-    const buyOrderObj = this.props.buyOrderList[0]
-    if(buyOrderObj && this.state.buyOrderTitles.length === 0) {
-      let keyList = Object.getOwnPropertyNames(buyOrderObj)
-      let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
-      this.setState((prevState, state) => ({
-        buyOrderTitles: newTitleArr
-      }))
-    }
-    const sellOrderObj = this.props.sellOrderList[0]
-    if(sellOrderObj && this.state.sellOrderTitles.length === 0) {
-      let keyList = Object.getOwnPropertyNames(sellOrderObj)
-      let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
-      this.setState((prevState, state) => ({
-        sellOrderTitles: newTitleArr
-      }))
+    if (this.props.buyOrderList) {
+      const buyOrderObj = this.props.buyOrderList[0]
+      if(buyOrderObj && this.state.buyOrderTitles.length === 0) {
+        let keyList = Object.getOwnPropertyNames(buyOrderObj)
+        let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
+        this.setState((prevState, state) => ({
+          buyOrderTitles: newTitleArr
+        }))
+      }
     }
     
-    const { displayBuyOrders, displaySellOrders, displayActualizedPL, buyOrderTitles, sellOrderTitles } = this.state
-    const { buyOrderList, sellOrderList } = this.props
+    if (this.props.sellOrderList) {
+      console.log(this.props.sellOrderList)
+      const sellOrderObj = this.props.sellOrderList[0]
+      if(sellOrderObj && this.state.sellOrderTitles.length === 0) {
+        let keyList = Object.getOwnPropertyNames(sellOrderObj)
+        let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
+        this.setState((prevState, state) => ({
+          sellOrderTitles: newTitleArr
+        }))
+      }
+    }
+    
+    if (this.props.refinedProfitLossTransactionList) {
+      const profitLossTransactionObj = this.props.refinedProfitLossTransactionList[0]
+      if(profitLossTransactionObj && this.state.profitLossTransactionTitles.length === 0) {
+        let keyList = Object.getOwnPropertyNames(profitLossTransactionObj)
+        let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
+        this.setState((prevState, state) => ({
+          profitLossTransactionTitles: newTitleArr
+        }))
+      }
+    }
+        
+    const { displayBuyOrders, displaySellOrders, displayActualizedPL, buyOrderTitles, sellOrderTitles, profitLossTransactionTitles } = this.state
+    const { buyOrderList, sellOrderList, refinedProfitLossTransactionList } = this.props
     const selectedStyle = {
       'color': '#fcfafa',
-      'backgroundColor': '#371732',
+      'background': '#c21500',
+      'background': '-webkit-linear-gradient(to right, #FFA900, #c21500)',
+      'background': 'linear-gradient(to right, #FFA900, #c21500)',
       'border': 'solid #fcfafa .1rem'
     }
-    console.log(buyOrderList)
+
+    const config = {
+      buy_order: {
+        header: 'Buy Orders',
+        titles: buyOrderTitles,
+        list: buyOrderList
+      },
+      sell_order: {
+        header: 'Sell Orders',
+        titles: sellOrderTitles,
+        list: sellOrderList
+      },
+      pl_transaction: {
+        header: 'Actualized Profit/Loss',
+        titles: profitLossTransactionTitles,
+        list: refinedProfitLossTransactionList
+      }
+    }
 
     return (
       <ContainerDiv>
@@ -185,38 +243,22 @@ class Transactions extends Component {
             Actualized P/L
           </DisplaySelectButton>
         </OrderTypeDiv>
-        { displayBuyOrders &&
-          <ContainerDiv>
-          <Header>Buy Orders</Header>
-          <TransactionTable 
-            titles={ buyOrderTitles && buyOrderTitles } 
-            buyOrderList={ buyOrderList.length > 0 && buyOrderList } 
+
+        <TableContainerDiv>
+          <TransactionTable
+            buy_order_config={ displayBuyOrders && config.buy_order }
+            sell_order_config={ displaySellOrders && config.sell_order }
+            pl_transaction_config={ displayActualizedPL && config.pl_transaction }
           />
-          </ContainerDiv>
-        }
-        { displaySellOrders &&
-          <ContainerDiv>
-          <Header>Sell Orders</Header>
-          <TransactionTable 
-            titles={ sellOrderTitles && sellOrderTitles } 
-            sellOrderList={ sellOrderList.length > 0 && sellOrderList } 
-          />
-          </ContainerDiv>
-        }
-        { displayActualizedPL &&
-          <ContainerDiv>
-          <Header>Actualized Profit/Loss</Header>
-          <TransactionTable />
-          </ContainerDiv>
-        }
+        </TableContainerDiv>
       </ContainerDiv>
     )
   }
 }
 
 
-function mapStateToProps({ buyOrderList, sellOrderList }) {
-  return { buyOrderList, sellOrderList }
+function mapStateToProps({ buyOrderList, sellOrderList, refinedProfitLossTransactionList }) {
+  return { buyOrderList, sellOrderList, refinedProfitLossTransactionList }
 }
 
-export default connect(mapStateToProps, { getBuyOrderList, getSellOrderList })(Transactions)
+export default connect(mapStateToProps, { getBuyOrderList, getSellOrderList, getProfitLossTransactionList })(Transactions)

@@ -15,9 +15,9 @@ const ContainerDiv = Div.extend`
   width: 48rem;
   height: 5.5rem;
   padding: 0;
-  background-color: #371732;
+  color: #011627;
+  background-color: #fffbfc;
   font-size: .7rem;
-  color: #fcfafa;
 `
 
 const H2 = styled.h2`

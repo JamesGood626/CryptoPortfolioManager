@@ -32,21 +32,21 @@ const Span = styled.span`
   display: flex;
   align-items: center;
   margin-left: 2.5rem;
-  color: #371732;
-  fill: #371732;
+  color: #1C1C1C;
+  fill: #1C1C1C;
   font-size: 1.4rem;
 
   &:hover {
-    color: #d0ccd0;
-    fill: #d0ccd0;
+    color: #17CA4A;
+    fill: #17CA4A;
   }
 `
 
 
 const menuItems = ({ location, menuItems }) => {
   const activeLink = {
-    'color': '#4eb089',
-    'fill': '#4eb089'
+    'color': '#FFA900',
+    'fill': '#FFA900'
   }
   // console.log('in navbar')
   // console.log(location)
@@ -55,11 +55,13 @@ const menuItems = ({ location, menuItems }) => {
     <Nav role="navigation">
       <NavDiv>
         { menuItems.map(menuItem => {
-            return  <Link key={ menuItem.name } style={{ 'textDecoration': 'none' }} to={ menuItem.path }>
-                      <Span style={ (menuItem.path === location.pathname) ? activeLink : null }>
-                        { <menuItem.icon active={menuItem.path === location.pathname ? true : false}/> }{ menuItem.name }
-                      </Span>
-                    </Link>
+            return (
+              <Link key={ menuItem.name } style={{ 'textDecoration': 'none' }} to={ menuItem.path }>
+                <Span style={ (menuItem.path === location.pathname) ? activeLink : null }>
+                  { <menuItem.icon active={menuItem.path === location.pathname ? true : false}/> }{ menuItem.name }
+                </Span>
+              </Link>
+            ) 
           }
         )}
       </NavDiv>

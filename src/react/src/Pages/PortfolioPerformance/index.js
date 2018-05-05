@@ -1,6 +1,14 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
+import { connect } from 'react-redux'
+import { getCryptoAssetList } from '../../actions'
+
+import PortfolioTable from './portfolioTable'
+import PieChart from '../../SharedComponents/D3Components/PieChart'
+import BarChart from '../../SharedComponents/D3Components/BarChart'
+
+import capitalizeTitles from '../../Utils/capitalizeTitles'
 
 const Div = styled.div`
   display: flex;
@@ -8,8 +16,15 @@ const Div = styled.div`
 
 const ContainerDiv = Div.extend`
   flex-direction: column;
-  width: 48rem;
-  height: 36rem;
+  justify-content: space-between;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 14%;
+
+  @media (min-width: 900px) {
+    width: 100%;
+  }
 `
 
 const HeaderDiv = Div.extend`
@@ -19,15 +34,20 @@ const HeaderDiv = Div.extend`
   height: 5.5rem;
   padding-left: 2.2rem;
   padding-right: 2.2rem;
-  background-color: #371732;
-  color: #f2f2f2;
+  background-color: #fffbfc;
+  color: #011627;
 `
 
 const TableDiv = Div.extend`
   height: 80%;
-  width: 100%;
+  width: 100vw;
   overflow: auto;
-  background-color: #fcfafa;
+  background-color: #fffbfc;
+
+  @media (min-width: 900px) {
+    //compensates for navbar width
+    width: calc(100vw-16rem);
+  }
 `
 
 const Table = styled.table`
@@ -41,8 +61,8 @@ const Th = styled.th`
   padding-left: 3rem;
   padding-right: 3rem;
   border-right: .2rem solid #fcfafa;
-  background-color: #4eb089;
-  color: #f2f2f2;
+  background-color: #011627;
+  color: #011627;
 `
 
 const Tr = styled.tr`
@@ -52,58 +72,77 @@ const Tr = styled.tr`
 
 const Td = styled.td`
   padding: 1rem;
-  border-bottom: .1rem solid #272d2d;
+  border-bottom: 2px solid #011627;
 `
 
 class PortfolioPerformance extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      cryptoAssetTitles: []
+    }
+  }
+  
+  componentDidMount() {
+    this.props.getCryptoAssetList()
+  }
+
   render() {
+    const { cryptoAssetList, coinMarketApiDataList } = this.props
+    if (coinMarketApiDataList) {
+      console.log("THIS IF STATEMENT INSIDE OF THE RENDER FUNCTION RUNNING")
+      const cryptoAssetObj = coinMarketApiDataList[0]
+      if(cryptoAssetObj && this.state.cryptoAssetTitles.length === 0) {
+        let keyList = Object.getOwnPropertyNames(cryptoAssetObj)
+        let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
+        this.setState((prevState, state) => ({
+          cryptoAssetTitles: newTitleArr
+        }))
+      }
+      var pieChartData = coinMarketApiDataList.reduce((acc, curr) => {
+        let data = {
+          'number': curr.initial_investment_fiat,
+          'name': curr.ticker
+        }
+        acc.push(data)
+        return acc
+      }, [])
+      var barChartData = coinMarketApiDataList.reduce((acc, curr) => {
+        let data = {
+          'number': curr.gain_loss_percentage,
+          'name': curr.ticker
+        }
+        acc.push(data)
+        return acc
+      }, [])
+    }
+
+    const { cryptoAssetTitles } = this.state
     return (
       <ContainerDiv>
-        <HeaderDiv>
+         <BarChart barChartData={ barChartData }/> 
+        {/* <HeaderDiv>
           <h3>Total Portfolio Value:</h3>
-          <h3>Gain/Loss</h3>
-        </HeaderDiv>
-        <TableDiv>
-          <Table>
-            <thead>
-              <Tr>
-                <Th>Ticker</Th>
-                <Th>Quantity</Th>
-                <Th>Total</Th>
-                <Th>BTC Price</Th>
-                <Th>USD Price</Th>
-                <Th>1hr % Change</Th>
-                <Th>24hr % Change</Th>
-                <Th>7d % Change</Th>
-              </Tr>
-            </thead>
-            <tbody>
-              <Tr>
-                <Td>Rick</Td>
-                <Td>Johansen</Td>
-                <Td>RJ@mail.com</Td>
-                <Td>92345.00</Td>
-              </Tr>
-            </tbody>
-          </Table>
-        </TableDiv>
+          <h3>Gain/Loss:</h3>
+        </HeaderDiv> */}
+        { coinMarketApiDataList
+          ?
+          <PortfolioTable 
+            titles={ cryptoAssetTitles && cryptoAssetTitles } 
+            cryptoAssetList={ coinMarketApiDataList.length > 0 && coinMarketApiDataList } 
+          />
+          :
+          null
+        }
+        {/* <PieChart pieChartData={pieChartData}/> */}
       </ContainerDiv>
     )
   }
 }
 
-export default PortfolioPerformance
+function mapStateToProps({ cryptoAssetList, coinMarketApiDataList }) {
+  return { cryptoAssetList, coinMarketApiDataList }
+}
 
-// Basic table structure
-// <table>
-//   <tr>
-//     <th>First Name</th>
-//     <th>Last Name</th>
-//     <th>Email</th>
-//   </tr>
-//   <tr>
-//     <td>Rick</td>
-//     <td>Johansen/td>
-//     <td>RJ@mail.com</td>
-//   </tr>
-// </table>
+export default connect(mapStateToProps, { getCryptoAssetList })(PortfolioPerformance)

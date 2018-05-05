@@ -1,58 +1,67 @@
 import React, { Component } from 'react'
+import { render } from 'react-dom'
 import { connect } from 'react-redux'
-import { getFiatOptionList, getUserSettingsList } from '../../actions'
+import Downshift from 'downshift'
 
-import styled from 'styled-components'
+import { getFiatOptionList, getUserSettingsList, updateUserFiatOption } from '../../actions'
 
+// import styled from 'styled-components'
+
+import { TransitionGroup, Transition } from 'react-transition-group'
+import { TweenMax } from 'gsap'
 import fadeTransition from '../fade'
 
-const ContainerDiv = styled.div`
-  position: absolute;
-  z-index: 9000;
-  top: 0.8rem;
-  left: 84%;
-  width: 16rem;
-`
-const Div = styled.div`
-  height: 2.4rem;
-  width: 8rem;
-  margin: 0;
-  margin-left: 25%;
-  line-height: 2.4rem;
-  text-align: center;
-  vertical-align: center;
+// VALIANT EFFORT, SAVE THIS FOR LATER REFERENCE AND CLEAN UP COMMENTS.
+// BUT YOU REALLY NEED TO USE DOWNSHIFT AND LEARN ITS PATTERNS
 
-  &:hover {
-    cursor: pointer;
-    background-color: limegreen;
-  }
-`
+// const ContainerDiv = styled.div`
+//   position: absolute;
+//   z-index: 9000;
+//   top: 0.8rem;
+//   left: 84%;
+//   width: 16rem;
+// `
 
-const ListDiv = styled.ul`
-  position: absolute;
-  top: 2rem;
-  left: -25%;
-  display: flex;
-  flex-direction: column;
-  height: 10rem;
-  width: 16rem;
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-  list-style: none;
-  background-color: #fcfafa;
-`
+// const Div = styled.div`
+//   height: 2.4rem;
+//   width: 8rem;
+//   margin: 0;
+//   margin-left: 25%;
+//   line-height: 2.4rem;
+//   text-align: center;
+//   vertical-align: center;
 
-const Li = styled.li`
-  height: 2rem;
-  padding: 0.5rem;
-  margin: 0;
+//   &:hover {
+//     cursor: pointer;
+//     background-color: limegreen;
+//   }
+// `
+
+// const ListDiv = styled.ul`
+//   position: absolute;
+//   top: 2rem;
+//   left: -25%;
+//   display: flex;
+//   flex-direction: column;
+//   height: 10rem;
+//   width: 16rem;
+//   margin: 0;
+//   padding: 0;
+//   overflow: auto;
+//   list-style: none;
+//   background-color: #fcfafa;
+// `
+
+// const Li = styled.li`
+//   height: 2rem;
+//   padding: 0.5rem;
+//   margin: 0;
   
-  &:hover {
-    cursor: pointer;
-    background-color: limegreen;
-  }
-`
+//   &:hover {
+//     cursor: pointer;
+//     background-color: limegreen;
+//   }
+// `
 
 // The transition isn't working right now, but once I have my API
 // sending the initial value for the Div header, then I won't need
@@ -65,12 +74,19 @@ class CurrencyDropDown extends Component {
     super(props)
 
     this.state = {
-      selected: null,
-      showList: false
+      selectedCurrency: null,
+      showList: false,
+      dropDownHover: false
     }
-    this.updateSelected = this.updateSelected.bind(this)
+
+    this.updateSelectedCurrency = this.updateSelectedCurrency.bind(this)
     this.toggleList = this.toggleList.bind(this)
-    this.handleClickOutside = this.handleClickOutside.bind(this)
+    this.enterTransition = this.enterTransition.bind(this)
+    this.leaveTransition = this.leaveTransition.bind(this)
+    this.handleMouseDown = this.handleMouseDown.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
+    this.setMouseDownEventListener = this.setMouseDownEventListener.bind(this)
+    this.removeMouseDownEventListener = this.removeMouseDownEventListener.bind(this)
   }
 
   // Okay, so the way that picking selected currency will go:
@@ -80,104 +96,174 @@ class CurrencyDropDown extends Component {
   componentDidMount() {
     this.props.getUserSettingsList()
     this.props.getFiatOptionList()
-    document.addEventListener('mousedown', this.handleClickOutside)
+    document.addEventListener('mousedown', this.handleMouseDown)
+    document.addEventListener('keydown', this.handleKeyPress)
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside)
+  componentDidUnmount() {
+    if (!this.state.currencyHover) {
+      document.removeEventListener('mousedown', this.handleMouseDown)
+    }
+    document.removeEventListener('keypress', this.handleKeyPress)
   }
-    // The path to access Li's innerHTML
-    // this.list.props.children[0].props.children
-
-    // this.setState((prevState, state) => ({
-    //   selected: this.list.props.children[0].props.children
-    // }))
-
-  updateSelected(event) {
-    let { selected } = this.state
+ 
+  updateSelectedCurrency(event) {
+    let { selectedCurrency } = this.state
     let value = event.target.dataset.value
     let imgSrc = event.target.children[0].src
-    
-    if(selected.abbreviated_currency !== value) {
-      // Send this value off to database to update fiat_option
-      // event.target.dataset.value
-      
+    const prevSelectedCurrency = selectedCurrency.abbreviated_currency
+
+    if(selectedCurrency.abbreviated_currency !== value) {
       if(value && imgSrc) {
         this.setState((prevState, state) => ({
-          selected: { abbreviated_currency: value, flag_image: imgSrc }
+          selectedCurrency: { abbreviated_currency: value, flag_image: imgSrc }
         }))
+        this.toggleList()
+        const data = {
+          // abbreviated_currency property name necessary for POST compatibility
+          abbreviated_currency: value,
+          fromCurrency: prevSelectedCurrency
+        }
+        this.props.updateUserFiatOption(data)
       }
     }
   }
 
-  toggleList() {
+  toggleList(event) {
+    console.log("Toggle list runnin")
     this.setState((prevState, state) => ({
       showList: !prevState.showList
     }))
   }
 
-  handleClickOutside(event) {
-    if (this.state.showList) {
-      this.updateSelected(event)
+  enterTransition(node) {
+    TweenMax.fromTo(node, 0.4, {opacity: 0, y: -10}, {opacity: 1, y: 0})
+  }
+
+  leaveTransition(node) {
+    TweenMax.fromTo(node, 0.4, {opacity: 1, y: 0}, {opacity: 0, y: -10})
+  }
+
+  handleMouseDown(event) {
+    console.log(event.target)
+    const { showList } = this.state
+    if (event.target.className !== "dropDownSelector" && showList){
       this.toggleList()
+    }
+    // else if (event.target.className === "dropDownSelector dropDownListItem") {
+    //   this.toggleList()
+    // }
+  }
+
+  handleKeyPress(event) {
+    const { showList } = this.state
+    if (event.key === "Enter" && event.target.id === "dropDownToggleDiv") {
+      console.log(event)
+      this.toggleList()
+    }
+    // Next handle if showList === True and up or down arrow key is pressed, navigate list items
+    if((event.key === "ArrowDown" || "ArrowUp") && showList) {
+      console.log("Arrow key press event")
+      // This event chain targets the list li's
+      // Need to explore options for creating a WAI compliant listbox with focus on up down arrows
+      console.log(event.target.nextElementSibling.childNodes[0].childNodes)
+      this.list.children[0].focus()
+      event.preventDefault()
+      // **************************To-Do**********************************
+      // Need to enable focus on list items for up and down arrow keypress
+    }
+  }
+
+  setMouseDownEventListener() {
+    this.setState((prevState, state) => ({
+        dropDownHover: !prevState.dropDownHover
+    }))
+    if (this.state.dropDownHover) {
+      document.addEventListener('mousedown', this.handleMouseDown)
+    }
+  }
+
+  removeMouseDownEventListener() {
+    this.setState((prevState, state) => ({
+        dropDownHover: !prevState.dropDownHover
+    }))
+    if (!this.state.dropDownHover) {
+      document.removeEventListener('mousedown', this.handleMouseDown)
     }
   }
 
   render() {
-    const { selected, showList } = this.state
+    const { selectedCurrency, showList } = this.state
     const { fiatOptionList, userSettingsList } = this.props
-    if(userSettingsList && selected === null) {
+    if(userSettingsList && selectedCurrency === null) {
       this.setState((prevState, state) => ({
-        selected: userSettingsList
+        selectedCurrency: userSettingsList
       }))
     }
     const hiddenStyle = {
       'visibility': 'hidden',
     }
     return(
-      <ContainerDiv>
-        {this.state.selected && <Div onClick={ this.toggleList }><img src={ this.state.selected.flag_image }/>{ this.state.selected.abbreviated_currency }</Div>}
-        <fadeTransition in={ showList } timeout={500}>
-           { fiatOptionList.length > 0 ?
-            <ListDiv style={ showList ? null : hiddenStyle } ref={ x => { this.list = x } } onClick={ event => this.updateSelected(event) }>
-              { fiatOptionList.map(option => {
-                  return (
-                    <Li key={ option.abbreviated_currency } data-value={ option.abbreviated_currency }><img src={ option.flag_image }/>{ option.currency }</Li>
-                  )
-                }) 
-              }
-            </ListDiv> :
-            null 
-          } 
-        </fadeTransition>
-      </ContainerDiv>
-      // <select name="currency_code">
-      //   <option value="">Select Currency</option>
-      //   <option value="AUD">Australian Dollar</option>
-      //   <option value="BRL">Brazilian Real </option>
-      //   <option value="CAD">Canadian Dollar</option>
-      //   <option value="CZK">Czech Koruna</option>
-      //   <option value="DKK">Danish Krone</option>
-      //   <option value="EUR">Euro</option>
-      //   <option value="HKD">Hong Kong Dollar</option>
-      //   <option value="HUF">Hungarian Forint </option>
-      //   <option value="ILS">Israeli New Sheqel</option>
-      //   <option value="JPY">Japanese Yen</option>
-      //   <option value="MYR">Malaysian Ringgit</option>
-      //   <option value="MXN">Mexican Peso</option>
-      //   <option value="NOK">Norwegian Krone</option>
-      //   <option value="NZD">New Zealand Dollar</option>
-      //   <option value="PHP">Philippine Peso</option>
-      //   <option value="PLN">Polish Zloty</option>
-      //   <option value="GBP">Pound Sterling</option>
-      //   <option value="SGD">Singapore Dollar</option>
-      //   <option value="SEK">Swedish Krona</option>
-      //   <option value="CHF">Swiss Franc</option>
-      //   <option value="TWD">Taiwan New Dollar</option>
-      //   <option value="THB">Thai Baht</option>
-      //   <option value="TRY">Turkish Lira</option>
-      //   <option value="USD" SELECTED="YES">U.S. Dollar</option>
-      // </select>
+      <div id="dropDownContainer" 
+           class="dropDownSelector" 
+           onMouseEnter={this.removeMouseDownEventListener}
+           onMouseLeave={this.setMouseDownEventListener}
+      >
+        { this.state.selectedCurrency && 
+          <div onClick={ this.toggleList }
+               id="dropDownToggleDiv"
+               class="dropDownSelector"
+               tabIndex="0"
+          >
+            <img 
+               src={ this.state.selectedCurrency.flag_image }
+               class="dropDownSelector"
+            />
+            { this.state.selectedCurrency.abbreviated_currency }
+          </div>
+        }
+        <TransitionGroup>
+          { fiatOptionList.length > 0 && showList
+            ?
+              <Transition
+                in={ showList }
+                timeout={{
+                enter: 400,
+                exit: 400,
+                }}
+                mountOnEnter={ false }
+                unmountOnExit={ true } 
+                onEnter={ this.enterTransition }
+                onExit={ this.leaveTransition }
+              >
+                <ul
+                  id="dropDownDiv"
+                  class="dropDownSelector"
+                  // style={ showList ? null : hiddenStyle }
+                  ref={ x => { this.list = x } }
+                  onClick={ this.updateSelectedCurrency }
+                >
+                  { fiatOptionList.map(option => {
+                      return (
+                        <li
+                          id={ `currency_${option.abbreviated_currency}` }
+                          class="dropDownSelector dropDownListItem"
+                          key={ option.abbreviated_currency } 
+                          data-value={ option.abbreviated_currency }
+                        >
+                          <img id="currencyImg" src={ option.flag_image }/>
+                          { option.currency }
+                        </li>
+                      )
+                    }) 
+                  }
+                </ul> 
+              </Transition>
+            :
+              null 
+          }
+        </TransitionGroup>        
+      </div>
     )
   }
 }
@@ -186,4 +272,130 @@ function mapStateToProps({ fiatOptionList, userSettingsList }) {
   return { fiatOptionList, userSettingsList }
 }
 
-export default connect(mapStateToProps, { getFiatOptionList, getUserSettingsList })(CurrencyDropDown)
+export default connect(mapStateToProps, { getFiatOptionList, getUserSettingsList, updateUserFiatOption })(CurrencyDropDown)
+
+{/* <Downshift
+    onChange={selection => alert(`You selected ${selection}`)}
+    render={({
+      getInputProps,
+      getItemProps,
+      getLabelProps,
+      isOpen,
+      inputValue,
+      highlightedIndex,
+      selectedItem,
+    }) => {(
+      <div>
+        { this.state.selectedCurrency && 
+          <div onClick={ this.toggleList }>
+            <img 
+               src={ this.state.selectedCurrency.flag_image }
+               class="dropDownSelector"
+            />
+            { this.state.selectedCurrency.abbreviated_currency }
+          </div>
+        }
+        {isOpen ? (
+          <div>
+            {items
+              .filter(i => !inputValue || i.includes(inputValue))
+              .map((item, index) => (
+                <div
+                  {...getItemProps({
+                    key: item,
+                    index,
+                    item,
+                    style: {
+                      backgroundColor: highlightedIndex === index
+                        ? 'lightgray'
+                        : 'white',
+                      fontWeight: selectedItem === item
+                        ? 'bold'
+                        : 'normal',
+                    },
+                  })}
+                >
+                  {item}
+                </div>
+              ))}
+          </div>
+        ) : null}
+      </div>
+    )}
+  /> */}
+
+
+// render() {
+//     const { selectedCurrency, showList } = this.state
+//     const { fiatOptionList, userSettingsList } = this.props
+//     if(userSettingsList && selectedCurrency === null) {
+//       this.setState((prevState, state) => ({
+//         selectedCurrency: userSettingsList
+//       }))
+//     }
+//     const hiddenStyle = {
+//       'visibility': 'hidden',
+//     }
+//     return(
+//       <div id="dropDownContainer" 
+//            class="dropDownSelector" 
+//            onMouseEnter={this.removeMouseDownEventListener}
+//            onMouseLeave={this.setMouseDownEventListener}
+//       >
+//         { this.state.selectedCurrency && 
+//           <div onClick={ this.toggleList }
+//                id="dropDownToggleDiv"
+//                class="dropDownSelector"
+//                tabIndex="0"
+//           >
+//             <img 
+//                src={ this.state.selectedCurrency.flag_image }
+//                class="dropDownSelector"
+//             />
+//             { this.state.selectedCurrency.abbreviated_currency }
+//           </div>
+//         }
+//         <TransitionGroup>
+//           { fiatOptionList.length > 0 && showList
+//             ?
+//               <Transition
+//                 in={ showList }
+//                 timeout={{
+//                 enter: 400,
+//                 exit: 400,
+//                 }}
+//                 mountOnEnter={ false }
+//                 unmountOnExit={ true } 
+//                 onEnter={ this.enterTransition }
+//                 onExit={ this.leaveTransition }
+//               >
+//                 <ul
+//                   id="dropDownDiv"
+//                   class="dropDownSelector"
+//                   // style={ showList ? null : hiddenStyle }
+//                   ref={ x => { this.list = x } }
+//                   onClick={ this.updateSelectedCurrency }
+//                 >
+//                   { fiatOptionList.map(option => {
+//                       return (
+//                         <li
+//                           id={ `currency_${option.abbreviated_currency}` }
+//                           class="dropDownSelector dropDownListItem"
+//                           key={ option.abbreviated_currency } 
+//                           data-value={ option.abbreviated_currency }
+//                         >
+//                           <img id="currencyImg" src={ option.flag_image }/>
+//                           { option.currency }
+//                         </li>
+//                       )
+//                     }) 
+//                   }
+//                 </ul> 
+//               </Transition>
+//             :
+//               null 
+//           }
+//         </TransitionGroup>        
+//       </div>
+//     )
+//   }

@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import { Redirect } from 'react-router-dom'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { registerUser } from '../../actions'
@@ -11,16 +12,27 @@ import SubmitButton from '../../SharedComponents/submitButton'
 // import ErrorBoundary from '../ErrorBoundary'
 
 
+// UTILIZE THE COMMENTED OUT VALIDATE REDUX FORM - AFTER IMPLEMENTING REGISTRATION SPECIFIC LOGIC/FILTRATION
+
 const CenteredForm = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   font-family: 'Quattrocento', serif;
-  width: 30%;
-  height: 80%;
-  color: #371732;
-  background-color: #fcfafa;
+  width: 20rem;
+  height: 25rem;
+  color: #c21500;
+  background: #c21500;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-bottom-left-radius: 25px;
+  border-top-right-radius: 25px;
+  box-shadow: 2px 2px 4px #aaa;
+
+  @media (min-width: 900px) {
+    width: 24rem;
+  }
 `
 
 const SuccessDiv = styled.div`
@@ -60,8 +72,8 @@ class Form extends Component {
     const onSubmit = (values) => {this.props.registerUser(values)}
     
     if(submitSucceeded) {
-      return(
-        <SuccessDiv>Success!</SuccessDiv>
+      return (
+        <Redirect to='/login'/>
       )
     }
 

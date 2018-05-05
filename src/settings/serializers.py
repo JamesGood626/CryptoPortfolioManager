@@ -7,7 +7,7 @@ from .models import (
 )
 
 
-class FiatOptionListSerializer(serializers.ModelSerializer):
+class FiatOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FiatOption
         fields = [

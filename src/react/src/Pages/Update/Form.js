@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
-import { addNewCrypto, getSymbolList } from '../../actions'
+import { getSymbolList, getHistoricalRate } from '../../actions'
 import { Field, reduxForm } from 'redux-form'
 
 
@@ -19,8 +19,11 @@ const CenteredForm = styled.form`
   height: 22rem;
   width: 20rem;
   font-family: 'Quattrocento', serif;
-  color: #371732;
-  background-color: #fcfafa;
+  background: #c21500;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-bottom-left-radius: 25px;
+  box-shadow: 2px 2px 4px #aaa;
 
   @media (min-width: 900px) {
     height: 26rem;
@@ -29,35 +32,41 @@ const CenteredForm = styled.form`
   }
 `
 
-const Div = styled.div`
+const FormDiv = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 `
+// Need to change fields to require
+// Base Currency
+// Quote Currency
+// Price
+// Quantity
+// Fee
 
-const BUY_FIELDS = [
+
+const FIELDS = [
+  { name: 'price', label: 'Price' },
   { name: 'quantity', label: 'Quantity' },
-  { name: 'purchase_price_btc', label: 'Purchase Price BTC' },
-  { name: 'purchase_price_fiat', label: 'Purchase Price' },
-  { name: 'exchange_fee_btc', label: 'Exchange Fee BTC' },
-  { name: 'exchange_fee_fiat', label: 'Exchange Fee' }
+  { name: 'fee', label: 'Fee' },
+  { name: 'dateTime', label: 'Date-Time' }
 ]
 
-const SELL_FIELDS = [
-  { name: 'quantity', label: 'Quantity' },
-  { name: 'sell_price_btc', label: 'Sell Price BTC' },
-  { name: 'sell_price_fiat', label: 'Sell Price' },
-  { name: 'exchange_fee_btc', label: 'Exchange Fee BTC' },
-  { name: 'exchange_fee_fiat', label: 'Exchange Fee' }
-]
+// const SELL_FIELDS = [
+//   { name: 'quantity', label: 'Quantity' },
+//   { name: 'sell_price_btc', label: 'Sell Price BTC' },
+//   { name: 'sell_price_fiat', label: 'Sell Price' },
+//   { name: 'exchange_fee_btc', label: 'Exchange Fee BTC' },
+//   { name: 'exchange_fee_fiat', label: 'Exchange Fee' }
+// ]
 
 
 class Form extends Component {
   constructor(props) {
     super(props)
 
-    this.checkLabel = this.checkLabel.bind(this)
+    // this.checkLabel = this.checkLabel.bind(this)
   }
 
   componentWillMount() {
@@ -66,43 +75,25 @@ class Form extends Component {
     }
   }
 
-  checkLabel(label) {
-    if (label === "Purchase Price" || label === "Sell Price" || label === "Exchange Fee") {
-      return true
-    }
-    return false
-  }
+  // checkLabel(label) {
+  //   if (label === "Purchase Price" || label === "Sell Price" || label === "Exchange Fee") {
+  //     return true
+  //   }
+  //   return false
+  // }
 
   renderFields() {
-    const { buyOrder, sellOrder } = this.props
-    const fiatOption = 'USD'
-    const fiatOptionTwo = 'JPY'
-    if (buyOrder) {
-      return BUY_FIELDS.map( ({ label, name }) => {
-        return (
-          <Field
-            key={ name }
-            label={ this.checkLabel(label) ? `${label} ${fiatOption}` : label  }
-            name={ name }
-            type="text"
-            component={ Input }
-          />
-        )
-      })
-    }
-    else if (sellOrder) {
-      return SELL_FIELDS.map( ({ label, name }) => {
-        return (
-          <Field
-            key={ name }
-            label={ this.checkLabel(label) ? `${label} ${fiatOptionTwo}` : label  }
-            name={ name }
-            type="text"
-            component={ Input }
-          />
-        )
-      })
-    }
+    return FIELDS.map(({ label, name }) => {
+      return (
+        <Field
+          key={ name }
+          label={ label }
+          name={ name }
+          type="text"
+          component={ Input }
+        />
+      )
+    })
   }
   
   render() {
@@ -116,7 +107,7 @@ class Form extends Component {
         values.sellOrder = true
       }
       console.log(values)
-      this.props.addNewCrypto(values)
+      this.props.getHistoricalRate(values)
     }
 
     // const fieldStyles = {
@@ -129,7 +120,7 @@ class Form extends Component {
 
     return(
       <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
-        <Div>
+        <FormDiv>
           <datalist id="cryptos">
             { Array.isArray(symbolList) ? 
               symbolList.map((symbol, index) => {
@@ -140,10 +131,11 @@ class Form extends Component {
               : null 
             }
           </datalist>
-          <Field label="Add New Crypto" name="ticker" type="text" list="cryptos" component={ Input } /> 
+          <Field label="Base Currency" name="baseCurrency" type="text" list="cryptos" component={ Input } />
+          <Field label="Quote Currency" name="quoteCurrency" type="text" list="cryptos" component={ Input } />
           { this.renderFields() }
           <SubmitButton type="submit">Submit</SubmitButton>
-        </Div>
+        </FormDiv>
       </CenteredForm>
     )
   }
@@ -174,5 +166,36 @@ function mapStateToProps({ symbolList }) {
 export default reduxForm({
   form: 'AddNewCryptoForm'
 })(
-  connect(mapStateToProps, { getSymbolList, addNewCrypto })(Form)
+  connect(mapStateToProps, { getSymbolList, getHistoricalRate })(Form)
 )
+
+// Can remove this from renderFields() because there will be no difference in field names
+// const { buyOrder, sellOrder } = this.props
+// const fiatOption = 'USD'
+// const fiatOptionTwo = 'JPY'
+// if (buyOrder) {
+//       return BUY_FIELDS.map( ({ label, name }) => {
+//         return (
+//           <Field
+//             key={ name }
+//             label={ this.checkLabel(label) ? `${label} ${fiatOption}` : label  }
+//             name={ name }
+//             type="text"
+//             component={ Input }
+//           />
+//         )
+//       })
+//     }
+//     else if (sellOrder) {
+//       return SELL_FIELDS.map( ({ label, name }) => {
+//         return (
+//           <Field
+//             key={ name }
+//             label={ this.checkLabel(label) ? `${label} ${fiatOptionTwo}` : label  }
+//             name={ name }
+//             type="text"
+//             component={ Input }
+//           />
+//         )
+//       })
+//     }

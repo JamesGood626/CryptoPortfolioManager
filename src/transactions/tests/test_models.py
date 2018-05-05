@@ -8,9 +8,15 @@ from ..models import (
     ProfitLossTransaction,
 )
 
+from settings.models import FiatOption
+
 
 class BuyOrderModelTestCase(TestCase):
     def setUp(self):
+        FiatOption.objects.create(
+            abbreviated_currency='USD',
+            currency='United States Dollar',
+        )
         user = User.objects.create(
             username='good7',
             password='good7',
@@ -38,6 +44,10 @@ class BuyOrderModelTestCase(TestCase):
 
 class SellOrderModelTestCase(TestCase):
     def setUp(self):
+        FiatOption.objects.create(
+            abbreviated_currency='USD',
+            currency='United States Dollar',
+        )
         user = User.objects.create(
             username='good7',
             password='good7',
@@ -65,6 +75,10 @@ class SellOrderModelTestCase(TestCase):
 
 class ProfitLossTransactionModelTestCase(TestCase):
     def setUp(self):
+        FiatOption.objects.create(
+            abbreviated_currency='USD',
+            currency='United States Dollar',
+        )
         user = User.objects.create(
             username='good7',
             password='good7',

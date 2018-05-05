@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import { Redirect } from 'react-router-dom'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { loginUser } from '../../actions'
@@ -10,22 +11,30 @@ import SubmitButton from '../../SharedComponents/submitButton'
 
 // import ErrorBoundary from '../ErrorBoundary'
 
-// const ContainerDiv = styled.div`
-//   width: 60%;
-//   height: 40%;
-//   transform: translate(45%, 45%);
-// `
+
+
+// STILL NEED TO DISPLAY ERROR MESSAGE IF SOMETHING GOES WRONG WHEN USER ATTEMPTS TO LOGIN
+
 
 const CenteredForm = styled.form`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: evenly-space;
   align-items: center;
   font-family: 'Quattrocento', serif;
-  width: 30%;
-  height: 60%;
-  color: #371732;
-  background-color: #fcfafa;
+  width: 20rem;
+  height: 20rem;
+  color: #c21500;
+  background: #c21500;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-bottom-left-radius: 25px;
+  border-top-right-radius: 25px;
+  box-shadow: 2px 2px 4px #aaa;
+
+  @media (min-width: 900px) {
+    width: 24rem;
+  }
 `
 
 const SuccessDiv = styled.div`
@@ -58,23 +67,29 @@ class Form extends Component {
   }
   
   render() {
-    const { handleSubmit, submitSucceeded } = this.props
+    const { error, handleSubmit, submitSucceeded, submitting } = this.props
     
-    const onSubmit = (values) => {this.props.loginUser(values)}
-    
-    if(submitSucceeded) {
+    const onSubmit = values => {
+      this.props.loginUser(values)
+    }
+
+    console.log("USER AUTHENTICATED")
+    console.log(this.props.userAuthenticated)
+
+    if(this.props.userAuthenticated) {
       return(
-        <SuccessDiv>Success!</SuccessDiv>
+        <Redirect to='/portfolio/update'/>
       )
     }
 
-    else {  
+    else {
       return(
         // <ContainerDiv>
           <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
+            { error && <strong>{ error }</strong> }
             <Header>Log In</Header>
             { this.renderFields() }
-            <SubmitButton type="submit">Submit</SubmitButton>
+            <SubmitButton isDisabled={ this.props.isAuthenticating } type="submit">Submit</SubmitButton>
           </CenteredForm>
         // </ContainerDiv>
       )
@@ -100,12 +115,16 @@ class Form extends Component {
 // }
 
 
-// function mapStateToProps({ symbolList }) {
-//   return { symbolList }
-// }
+function mapStateToProps({ authentication }) {
+  return { 
+    isAuthenticating: authentication.isAuthenticating, 
+    userAuthenticated: authentication.userAuthenticated,
+    authenticationError: authentication.authenticationError
+  }
+}
 
 export default reduxForm({
   form: 'LoginForm'
 })(
-  connect(null, { loginUser })(Form)
+  connect(mapStateToProps, { loginUser })(Form)
 )

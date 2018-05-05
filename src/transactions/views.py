@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, reverse
 from django.db.models import Q
+
+from decimal import Decimal
+
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 
@@ -27,6 +30,7 @@ from rest_framework import permissions
 from .models import (
     BuyOrder,
     SellOrder,
+    ProfitLossTransaction
 )
 
 from .serializers import (
@@ -34,6 +38,7 @@ from .serializers import (
     SellOrderCreateSerializer,
     BuyOrderListSerializer,
     SellOrderListSerializer,
+    ProfitLossTransactionListSerializer,
 )
 
 from portfolio.models import CryptoAsset
@@ -45,7 +50,7 @@ from portfolio.models import CryptoAsset
 class BuyOrderCreateAPIView(CreateAPIView):
     queryset = BuyOrder.objects.all()
     serializer_class = BuyOrderCreateSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         print(request.data)
@@ -86,7 +91,13 @@ class SellOrderCreateAPIView(CreateAPIView):
         )
         print('CryptoAsset count in SellOrderCreateAPIView POST')
         print(qs.count())
-        if qs.count() == 1:
+        print('THIS IS THE FIRST QS ITEM')
+        print(qs[0].quantity)
+        # What follows the and prevents a sell order that would result in a
+        # negative crypto asset quantity from being executed.
+        # Will still need to handle the error accordingly.
+        # And I could benefit from writing a test to ensure that an exception is raised accordingly.
+        if qs.count() == 1 and (qs[0].quantity - Decimal(request.data['quantity'])) >= 0:
             sell_order_data = {
                 'user': request.user.id,
                 'ticker': request.data['ticker'],
@@ -150,3 +161,28 @@ class SellOrderListView(ListAPIView):
             }
             sell_order_list.append(data)
         return Response(sell_order_list)
+
+
+class ProfitLossTransactionListView(ListAPIView):
+    authentication_classes = [JSONWebTokenAuthentication]
+    serializer_class = ProfitLossTransactionListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        queryset = ProfitLossTransaction.objects.filter(user=request.user.id)
+        pl_transaction_list = []
+        for pl_transaction in queryset:
+            data = {
+                'ticker': pl_transaction.ticker,
+                'quantity_sold': pl_transaction.quantity_sold,
+                'total_buy_price_fiat': pl_transaction.total_buy_price_fiat,
+                'total_buy_price_btc': pl_transaction.total_buy_price_btc,
+                'total_sell_price_fiat': pl_transaction.total_sell_price_fiat,
+                'total_sell_price_btc': pl_transaction.total_sell_price_btc,
+                'exchange_fee_fiat': pl_transaction.exchange_fee_fiat,
+                'exchange_fee_btc': pl_transaction.exchange_fee_btc,
+                'gain_loss_percentage': pl_transaction.gain_loss_percentage,
+            }
+            print(data)
+            pl_transaction_list.append(data)
+        return Response(pl_transaction_list)

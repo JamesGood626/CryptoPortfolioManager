@@ -27,6 +27,8 @@ const OverlayDiv = styled.div`
   }
 `
 
+// createPortal for Modal Overlay is overkill
+
 class Overlay extends Component {
   constructor(props) {
     super(props)
@@ -41,8 +43,8 @@ class Overlay extends Component {
   render() {
     return ReactDOM.createPortal(
       <OverlayDiv className="overlay">
-        <Span onClick={this.props.onClose}>X</Span>
-        {this.props.children}
+        <Span onClick={ this.props.onClose }>X</Span>
+        { this.props.children }
       </OverlayDiv>, this.overlayContainer
     )
   }

@@ -10,9 +10,11 @@ const ContainerDiv = styled.div`
   padding: 0;
   height: 4.5rem;
   width: 20rem;
-  background-color: #371732;
+  background-color: #fffbfc;
   font-size: .7rem;
-  color: #fcfafa;
+  color: #c21500;
+  border-top-right-radius: 25px;
+  box-shadow: 2px 2px 3px #ccc;
 
   @media (min-width: 900px) {
     height: 5.5rem;

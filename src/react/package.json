@@ -5,6 +5,8 @@
   "proxy": "http://localhost:8000",
   "dependencies": {
     "axios": "^0.17.1",
+    "d3": "^5.1.0",
+    "downshift": "^1.31.6",
     "gsap": "^1.20.3",
     "normalize.css": "^7.0.0",
     "react": "^16.2.0",
@@ -24,6 +26,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "flow": "flow"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.71.0"
   }
 }
