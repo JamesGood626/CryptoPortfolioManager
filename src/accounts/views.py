@@ -54,18 +54,29 @@ class UserCreateAPIView(CreateAPIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        print(request.data)
         if request.user.is_authenticated:
             return Response("You're already authenticated")
-        print(request.data)
-        serializer = UserCreateSerializer(data=request.data)
-        # Will need to ensure I handle error cases appropriately to send back
-        # # to the client side app.
+        # This works for now, to ensure that if a username
+        # is currently taken then two of the same users won't be
+        # created, but need to implement a more elegant solution
+        username = request.data['username']
+        password = request.data['password']
+        user = authenticate(request, username=username, password=password)
+        print(user)
+        if user is not None:
+            print("Returning the 404")
+            return Response(status=HTTP_404_NOT_FOUND)
+        else:
+            serializer = UserCreateSerializer(data=request.data)
+            # Will need to ensure I handle error cases appropriately to send back
+            # # to the client side app.
 
-        if not serializer.is_valid():
-            return Response("There seems to have been an error.")
-        serializer.save()
-        # Successfully reverses URL, however no redirect occurs...
-        return Response("Registering was a success")
+            if not serializer.is_valid():
+                return Response("There seems to have been an error.")
+            serializer.save()
+            # Successfully reverses URL, however no redirect occurs...
+            return Response("Registering was a success")
 
 
 class LoginAPIView(APIView):

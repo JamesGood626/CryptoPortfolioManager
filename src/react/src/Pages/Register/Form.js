@@ -69,16 +69,16 @@ class Form extends Component {
   render() {
     const { handleSubmit, submitSucceeded } = this.props
     
-    const onSubmit = (values) => {this.props.registerUser(values)}
+    const onSubmit = values => { this.props.registerUser(values) }
     
-    if(submitSucceeded) {
+    if(this.props.userRegistered) {
       return (
         <Redirect to='/login'/>
       )
     }
 
     else {  
-      return(
+      return (
           <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
             <Header>Register</Header>
             { this.renderFields() } 
@@ -111,8 +111,16 @@ class Form extends Component {
 //   return { symbolList }
 // }
 
+function mapStateToProps({ authentication }) {
+  return { 
+    isRegistering: authentication.isRegistering,
+    userRegistered: authentication.userRegistered,
+    registrationError: authentication.registrationError
+  }
+}
+
 export default reduxForm({
   form: 'RegisterForm'
 })(
-  connect(null, { registerUser })(Form)
+  connect(mapStateToProps, { registerUser })(Form)
 )

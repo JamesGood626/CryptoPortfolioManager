@@ -77,7 +77,7 @@ class Form extends Component {
     console.log(this.props.userAuthenticated)
 
     if(this.props.userAuthenticated) {
-      return(
+      return (
         <Redirect to='/portfolio/update'/>
       )
     }

@@ -7,6 +7,9 @@ import {
   IS_AUTHENTICATING,
   AUTHENTICATE_USER,
   AUTHENTICATION_ERROR,
+  IS_REGISTERING,
+  REGISTER_USER,
+  REGISTRATION_ERROR,
   ADD_NEW_CRYPTO,
   GET_SYMBOL_LIST, 
   GET_BUY_ORDER_LIST, 
@@ -18,6 +21,10 @@ import {
   GET_CRYPTO_ASSET_LIST,
   GET_COIN_MARKET_API_DATA
 } from './types'
+import { 
+  CURRENCY_CONVERSION_APP_ID,
+  COIN_API_KEY
+} from './devVenv'
 
 const REGISTER_USER_URL = 'http://127.0.0.1:8000/users/api/register/'
 const LOGIN_USER_URL = 'http://127.0.0.1:8000/users/login/'
@@ -34,11 +41,6 @@ const CRYPTO_ASSET_LIST_URL = 'http://127.0.0.1:8000/api/portfolio/crypto-asset/
 
 // UPDATE URLS
 const UPDATE_USER_FIAT_OPTION_URL = 'http://127.0.0.1:8000/api/settings/user-settings/update/'
-
-// API CREDENTIALS
-const CURRENCY_CONVERSION_APP_ID = '90bc9dc92d3541ae97efc078912a1dbf'
-// Send over this key in the reqeust header
-const COIN_API_KEY = '5257DAF4-0354-4B8E-B525-877CE09F3B35'
 
 // API URLS
 const CURRENCY_CONVERSION_API_BASE_URL = 'https://openexchangerates.org/api/latest.json'
@@ -60,10 +62,17 @@ export const registerUser = values => async dispatch => {
     email: values["email"]
   }
 
-  await axios.post(`${REGISTER_USER_URL}`, userInfo)
-    .catch(function (error) {
-      console.log(error)
-    })
+  try {
+    await axios.post(`${REGISTER_USER_URL}`, userInfo)
+    dispatch({ type: REGISTER_USER, payload: true })
+  }
+  catch (err) {
+    console.log("Error in the catch block of registerUser")
+    console.log(err)
+
+    return err
+  }
+  
 
   // dispatch({ type: GET_SYMBOL_LIST, payload: refinedSymbolList })
 }
@@ -89,10 +98,12 @@ export const loginUser = values => async dispatch => {
   }
   catch (err) {
     console.log("Error in the catch block")
+    // err.message to display network error message
     // Either return customized error message from server and use err.message
     // or use err.response.status to determine the type of error and customize the message here
+    console.log(err.message)
     console.log(err.response.status)
-    dispatch({ type: AUTHENTICATION_ERROR })
+    dispatch({ type: REGISTRATION_ERROR })
   } 
 }
 

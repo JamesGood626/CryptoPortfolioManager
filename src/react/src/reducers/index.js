@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
 import authenticationReducer from './authenticationReducer'
+import registrationReducer from './registrationReducer'
 import addNewCryptoReducer from './addNewCryptoReducer'
 import getBuyOrderListReducer from './getBuyOrderListReducer'
 import getSellOrderListReducer from './getSellOrderListReducer'
@@ -14,6 +15,7 @@ import getCoinMarketApiDataReducer from './getCoinMarketApiDataReducer'
 
 export default combineReducers({
   authentication: authenticationReducer,
+  registration: registrationReducer,
   addNewCrypto: addNewCryptoReducer,
   symbolList: symbolListReducer,
   buyOrderList: getBuyOrderListReducer,
