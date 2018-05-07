@@ -19,7 +19,7 @@ const ContainerDiv = Div.extend`
   justify-content: space-between;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   padding-top: 14%;
 
   @media (min-width: 900px) {

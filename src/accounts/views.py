@@ -8,7 +8,14 @@ import requests
 
 
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    # HTTP_304_NOT_MODIFIED, doesn't return data.message in instance of
+    # a username already being taken.
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND
+)
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework import status
@@ -65,8 +72,8 @@ class UserCreateAPIView(CreateAPIView):
         user = authenticate(request, username=username, password=password)
         print(user)
         if user is not None:
-            print("Returning the 404")
-            return Response(status=HTTP_404_NOT_FOUND)
+            content = {'message': 'That username is already taken.'}
+            return Response(content, status=HTTP_404_NOT_FOUND)
         else:
             serializer = UserCreateSerializer(data=request.data)
             # Will need to ensure I handle error cases appropriately to send back
@@ -76,7 +83,8 @@ class UserCreateAPIView(CreateAPIView):
                 return Response("There seems to have been an error.")
             serializer.save()
             # Successfully reverses URL, however no redirect occurs...
-            return Response("Registering was a success")
+            content = {'message': 'User successfully created.'}
+            return Response(content, status=HTTP_201_CREATED)
 
 
 class LoginAPIView(APIView):
@@ -93,9 +101,13 @@ class LoginAPIView(APIView):
         if user is not None:
             return Response(status=HTTP_200_OK)
         else:
-            return Response(status=HTTP_404_NOT_FOUND)
-        # r = requests.get('http://users/api/token/auth/', headers=request.data)
-        # print(r)
+            try:
+                User.objects.get(username=username)
+                content = {'message': 'Incorrect password.'}
+                return Response(content, status=HTTP_404_NOT_FOUND)
+            except User.DoesNotExist:
+                content = {'message': 'User does not exist.'}
+                return Response(content, status=HTTP_404_NOT_FOUND)
 
 
 # Need to work on the backend logic to extend ObtainJWTToken and check if

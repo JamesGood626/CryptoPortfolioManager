@@ -7,7 +7,7 @@ import { Field, reduxForm } from 'redux-form'
 import Input from '../../SharedComponents/FormComponents/input'
 import Header from '../../SharedComponents/FormComponents/header'
 import SubmitButton from '../../SharedComponents/submitButton'
-// import validateEmails from '../../utils/validateEmail'
+import validateEmails from '../../Utils/validateEmail'
 
 // import ErrorBoundary from '../ErrorBoundary'
 
@@ -22,7 +22,7 @@ const CenteredForm = styled.form`
   font-family: 'Quattrocento', serif;
   width: 20rem;
   height: 25rem;
-  color: #c21500;
+  color: #fcfafa;
   background: #c21500;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -47,7 +47,7 @@ const FIELDS = [
   { name: 'username', label: 'Username' },
   { name: 'email', label: 'Email' },
   { name: 'password', label: 'Password' },
-  { name: 'confirm-password', label: 'Confirm Password' }
+  { name: 'confirmPassword', label: 'Confirm Password' }
 ]
 
 
@@ -65,10 +65,19 @@ class Form extends Component {
       )
     })
   }
+
+  componentDidMount() {
+    const { userRegistered, isRegistering, registrationError } = this.props
+    console.log("userRegistered")
+    console.log(userRegistered)
+    console.log("isRegistering")
+    console.log(isRegistering)
+    console.log("registrationError")
+    console.log(registrationError)
+  }
   
   render() {
-    const { handleSubmit, submitSucceeded } = this.props
-    
+    const { handleSubmit, submitSucceeded, isRegistering } = this.props
     const onSubmit = values => { this.props.registerUser(values) }
     
     if(this.props.userRegistered) {
@@ -76,50 +85,51 @@ class Form extends Component {
         <Redirect to='/login'/>
       )
     }
-
-    else {  
-      return (
-          <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
-            <Header>Register</Header>
-            { this.renderFields() } 
-            <SubmitButton type="submit">Submit</SubmitButton>
-          </CenteredForm>
-      )
-    }
+    return (
+        <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
+          <Header>Register</Header>
+          { this.renderFields() } 
+          <SubmitButton idDisabled={ isRegistering } type="submit">Submit</SubmitButton>
+          {/* Style this, it correctly notifies a user if the username is already taken */}
+          { this.props.registrationError ? <h1>{ this.props.registrationError }</h1>  : null }
+        </CenteredForm>
+    )
   }
 }
 
-// function validate(values) {
-//   const errors = {}
+function validate(values) {
+  const errors = {}
 
-//   errors.email = validateEmails(values.email || '')
+  errors.email = validateEmails(values.email || '')
 
-//   if(!values.name || values.name.length < 3) {
-//     errors.name = 'Enter your Name'
-//   }
-//   if(!values.email) {
-//     errors.email = 'Enter your Email Address'
-//   }
-//   if(!values.projectInfo) {
-//     errors.projectInfo = 'Please provide some information about your project'
-//   }
-//   return errors
-// }
+  if(!values.username || values.username.length < 3) {
+    errors.username = 'Enter a Username'
+  }
+  if(!values.email) {
+    errors.email = 'Enter your Email Address'
+  }
+  if(!values.password) {
+    errors.password = 'Enter a password'
+  }
+  if(!values.confirmPassword) {
+    errors.confirmPassword = 'Confirm password'
+  }
+  if(values.password !== values.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match" 
+  }
+  return errors
+}
 
-
-// function mapStateToProps({ symbolList }) {
-//   return { symbolList }
-// }
-
-function mapStateToProps({ authentication }) {
+function mapStateToProps({ registration }) {
   return { 
-    isRegistering: authentication.isRegistering,
-    userRegistered: authentication.userRegistered,
-    registrationError: authentication.registrationError
+    isRegistering: registration.isRegistering,
+    userRegistered: registration.userRegistered,
+    registrationError: registration.registrationError
   }
 }
 
 export default reduxForm({
+  validate,
   form: 'RegisterForm'
 })(
   connect(mapStateToProps, { registerUser })(Form)

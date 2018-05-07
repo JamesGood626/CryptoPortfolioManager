@@ -20,7 +20,7 @@ export default function(state = initialState, action) {
       case REGISTER_USER:
         return {
           ...state,
-          uuserRegistered: action.payload, // This bool flag is giving me issues
+          userRegistered: action.payload,
           isRegistering: false
         }
       case REGISTRATION_ERROR:

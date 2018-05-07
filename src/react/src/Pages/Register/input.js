@@ -45,8 +45,7 @@ const StyledInput = styled.input`
 `
 
 const FormError = styled.div`
-  color: #d40000;
-  margin-top: -20px;
+  color: #fcfafa;
   margin-bottom: 20px;
 `
 

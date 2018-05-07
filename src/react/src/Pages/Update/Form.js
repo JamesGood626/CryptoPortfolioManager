@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
-import { getSymbolList, getHistoricalRate } from '../../actions'
+import { getSymbolList, getHistoricalRate, getBitcoinHistoricalRate } from '../../actions'
 import { Field, reduxForm } from 'redux-form'
-
 
 import Input from '../../SharedComponents/FormComponents/input'
 import SubmitButton from '../../SharedComponents/submitButton'
-// import { getSymbolList } from '../../actions'
-// import validateEmails from '../../utils/validateEmail'
+import validateDateTime from '../../Utils/validateDateTime'
 
 import ErrorBoundary from '../ErrorBoundary'
 
@@ -38,52 +36,54 @@ const FormDiv = styled.div`
   align-items: center;
   width: 100%;
 `
-// Need to change fields to require
-// Base Currency
-// Quote Currency
-// Price
-// Quantity
-// Fee
-
 
 const FIELDS = [
+  { name: 'baseCurrency', label: 'Base Currency' },
+  { name: 'quoteCurrency', label: 'Quote Currency' },
   { name: 'price', label: 'Price' },
   { name: 'quantity', label: 'Quantity' },
   { name: 'fee', label: 'Fee' },
   { name: 'dateTime', label: 'Date-Time' }
 ]
 
-// const SELL_FIELDS = [
-//   { name: 'quantity', label: 'Quantity' },
-//   { name: 'sell_price_btc', label: 'Sell Price BTC' },
-//   { name: 'sell_price_fiat', label: 'Sell Price' },
-//   { name: 'exchange_fee_btc', label: 'Exchange Fee BTC' },
-//   { name: 'exchange_fee_fiat', label: 'Exchange Fee' }
-// ]
-
-
 class Form extends Component {
-  constructor(props) {
-    super(props)
-
-    // this.checkLabel = this.checkLabel.bind(this)
-  }
-
-  componentWillMount() {
+  componentDidMount() {
+    // Coinmarketcap ticker list for dropdown options
     if (!Array.isArray(this.props.symbolList)) {
       this.props.getSymbolList()
     }
   }
 
-  // checkLabel(label) {
-  //   if (label === "Purchase Price" || label === "Sell Price" || label === "Exchange Fee") {
-  //     return true
-  //   }
-  //   return false
-  // }
-
-  renderFields() {
+  renderFields(withdrawDepositOrder = false) {
+    if(withdrawDepositOrder) {
+      return FIELDS.map(({ label, name }) => {
+        if(name === 'quoteCurrency') {
+          return
+        }
+        return (
+          <Field
+            key={ name }
+            label={ label }
+            name={ name }
+            type="text"
+            component={ Input }
+          />
+        )
+      })
+    }
     return FIELDS.map(({ label, name }) => {
+      if(name === 'baseCurrency' || name === 'quoteCurrency') {
+        return (
+          <Field
+            key={ name }
+            label={ label }
+            name={ name }
+            type="text"
+            list="cryptos"
+            component={ Input }
+          />
+        )
+      }
       return (
         <Field
           key={ name }
@@ -97,22 +97,41 @@ class Form extends Component {
   }
   
   render() {
-    const { handleSubmit, reset, submitSucceeded, symbolList, buyOrder, sellOrder } = this.props
+    const { 
+      handleSubmit, 
+      reset, 
+      submitSucceeded, 
+      symbolList, 
+      buyOrder, 
+      sellOrder, 
+      deposit, 
+      withdraw 
+    } = this.props
     
     const onSubmit = (values) => {
-      if (buyOrder) {
-        values.buyOrder = true
+      // Sets necessary flag so that action creator can issue
+      // a POST to the correct DRF api url
+      if (buyOrder || sellOrder) {
+        if (buyOrder) {
+          values.buyOrder = true
+        }
+        else if (sellOrder) {
+          values.sellOrder = true
+        }
+        console.log(values)
+        this.props.getHistoricalRate(values)
       }
-      else if (sellOrder) {
-        values.sellOrder = true
+      if(deposit || withdraw) {
+        if (deposit) {
+          values.deposit = true
+        }
+        else if (withdraw) {
+          values.withdraw = true
+        }
+        console.log(values)
+        this.props.getBitcoinHistoricalRate(values)
       }
-      console.log(values)
-      this.props.getHistoricalRate(values)
     }
-
-    // const fieldStyles = {
-    //   'color': '#371732'
-    // }
 
     if(submitSucceeded) {
       reset()
@@ -131,9 +150,7 @@ class Form extends Component {
               : null 
             }
           </datalist>
-          <Field label="Base Currency" name="baseCurrency" type="text" list="cryptos" component={ Input } />
-          <Field label="Quote Currency" name="quoteCurrency" type="text" list="cryptos" component={ Input } />
-          { this.renderFields() }
+          { this.props.withdraw || this.props.deposit ? this.renderFields(true) : this.renderFields() }
           <SubmitButton type="submit">Submit</SubmitButton>
         </FormDiv>
       </CenteredForm>
@@ -141,22 +158,24 @@ class Form extends Component {
   }
 }
 
-// function validate(values) {
-//   const errors = {}
+// GET YOUR REGEX ON!!!!!!!
 
-//   errors.email = validateEmails(values.email || '')
+function validate(values) {
+  const errors = {}
 
-//   if(!values.name || values.name.length < 3) {
-//     errors.name = 'Enter your Name'
-//   }
-//   if(!values.email) {
-//     errors.email = 'Enter your Email Address'
-//   }
-//   if(!values.projectInfo) {
-//     errors.projectInfo = 'Please provide some information about your project'
-//   }
-//   return errors
-// }
+  errors.dateTime = validateDateTime(values.dateTime || '')
+  
+  // if(!values.name || values.name.length < 3) {
+  //   errors.name = 'Enter your Name'
+  // }
+  // if(!values.email) {
+  //   errors.email = 'Enter your Email Address'
+  // }
+  // if(!values.projectInfo) {
+  //   errors.projectInfo = 'Please provide some information about your project'
+  // }
+  return errors
+}
 
 
 function mapStateToProps({ symbolList }) {
@@ -164,38 +183,8 @@ function mapStateToProps({ symbolList }) {
 }
 
 export default reduxForm({
+  validate,
   form: 'AddNewCryptoForm'
 })(
-  connect(mapStateToProps, { getSymbolList, getHistoricalRate })(Form)
+  connect(mapStateToProps, { getSymbolList, getHistoricalRate, getBitcoinHistoricalRate })(Form)
 )
-
-// Can remove this from renderFields() because there will be no difference in field names
-// const { buyOrder, sellOrder } = this.props
-// const fiatOption = 'USD'
-// const fiatOptionTwo = 'JPY'
-// if (buyOrder) {
-//       return BUY_FIELDS.map( ({ label, name }) => {
-//         return (
-//           <Field
-//             key={ name }
-//             label={ this.checkLabel(label) ? `${label} ${fiatOption}` : label  }
-//             name={ name }
-//             type="text"
-//             component={ Input }
-//           />
-//         )
-//       })
-//     }
-//     else if (sellOrder) {
-//       return SELL_FIELDS.map( ({ label, name }) => {
-//         return (
-//           <Field
-//             key={ name }
-//             label={ this.checkLabel(label) ? `${label} ${fiatOptionTwo}` : label  }
-//             name={ name }
-//             type="text"
-//             component={ Input }
-//           />
-//         )
-//       })
-//     }

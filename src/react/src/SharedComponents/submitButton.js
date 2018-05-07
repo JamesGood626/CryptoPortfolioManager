@@ -25,7 +25,7 @@ const Button = styled.button`
 `
 
 const SubmitButton = ({ children, isDisabled }) => {
-  return <Button type="submit" disabled={isDisabled}>{ children }</Button>
+  return <Button type="submit" disabled={ isDisabled }>{ children }</Button>
 }
 
 export default SubmitButton

@@ -42,11 +42,11 @@ const OrderTypeDiv = styled.div`
 `
 
 const BuyButton = styled.button`
-  width: 7rem;
+  width: 5.5rem;
   height: 2.8rem;
   margin: 0;
   margin-right: 2rem;
-  font-size: 1rem;
+  font-size: 2vh;
   line-height: 2.8rem;
   text-align: center;
   color: #fcfafa;
@@ -54,6 +54,11 @@ const BuyButton = styled.button`
   border-top-right-radius: 14px;
   border-bottom-left-radius: 14px;
   box-shadow: 2px 2px 3px #ccc;
+
+
+  @media (min-height: 740px) {
+    font-size: 0.9rem;
+  }
 
   &:hover {
     background: #17CA4A;
@@ -64,11 +69,11 @@ const BuyButton = styled.button`
 `
 
 const SellButton = styled.button`
-  width: 7rem;
+  width: 5.5rem;
   height: 2.8rem;
   margin: 0;
   margin-left: 2rem;
-  font-size: 1rem;
+  font-size: 2vh;
   line-height: 2.8rem;
   text-align: center;
   color: #fcfafa;
@@ -76,6 +81,11 @@ const SellButton = styled.button`
   border-top-left-radius: 14px;
   border-bottom-right-radius: 14px;
   box-shadow: 2px 2px 3px #ccc;
+
+
+  @media (min-height: 740px) {
+    font-size: 0.9rem;
+  }
 
   &:hover {
     background: #17CA4A;
@@ -89,45 +99,71 @@ type State = {
   buyOrder: boolean,
   sellOrder: boolean
 }
-// ComponentWillMount will make an API call to the Python backend so that it may query
+
 class Update extends Component<State> {
   constructor(props) {
     super(props)
     this.state = {
       buyOrder: true,
-      sellOrder: false
+      sellOrder: false,
+      withdraw: false,
+      deposit: false
     }
-
-    this.selectOrderType = this.selectOrderType.bind(this)
-    this.toggleBuy = this.toggleBuy.bind(this)  
-    this.toggleSell = this.toggleSell.bind(this)  
   }
 
-  toggleBuy() {
+  toggleBuy = () => {
     this.setState((prevState, state) => ({
-        buyOrder: !prevState.buyOrder
+        buyOrder: !prevState.buyOrder,
+        sellOrder: false,
+        deposit: false,
+        withdraw: false
     }))
   }
 
-  toggleSell() {
+  toggleSell = () => {
     this.setState((prevState, state) => ({
-        sellOrder: !prevState.sellOrder
+        sellOrder: !prevState.sellOrder,
+        buyOrder: false,
+        deposit: false,
+        withdraw: false
     }))
   }
 
-  selectOrderType(e) {
+  toggleWithdraw = () => {
+    this.setState((prevState, state) => ({
+        withdraw: !prevState.withdraw,
+        buyOrder: false,
+        sellOrder: false,
+        deposit: false
+    }))
+  }
+
+  toggleDeposit = () => {
+    this.setState((prevState, state) => ({
+        deposit: !prevState.deposit,
+        buyOrder: false,
+        sellOrder: false,
+        withdraw: false
+    }))
+  }
+
+  selectOrderType = e => {
     if (e.target.innerHTML === "Buy") {
-      this.toggleSell()
       this.toggleBuy()
     }
     else if (e.target.innerHTML === "Sell") {
-      this.toggleBuy()
       this.toggleSell()
+    }
+    else if (e.target.innerHTML === "Withdraw") {
+      this.toggleWithdraw()
+    }
+    else if (e.target.innerHTML === "Deposit") {
+      this.toggleDeposit()
     }
   }
 
   render() {
-    const { buyOrder, sellOrder } = this.state
+    const { buyOrder, sellOrder, withdraw, deposit } = this.state
     const selectedStyle = {
       'color': '#fffbfc',
       'background': '#c21500',
@@ -140,12 +176,13 @@ class Update extends Component<State> {
       <ContainerDiv>
         {/* <CurrencyDropDown/> */}
         <OrderTypeDiv>
-          <BuyButton style={ buyOrder ? selectedStyle : null } onClick={ sellOrder ? this.selectOrderType : null }>Buy</BuyButton>
-          <SellButton style={ sellOrder ? selectedStyle : null } onClick={ buyOrder ? this.selectOrderType : null }>Sell</SellButton>
+          <BuyButton style={ buyOrder ? selectedStyle : null } onClick={ !buyOrder && this.selectOrderType }>Buy</BuyButton>
+          <BuyButton style={ deposit ? selectedStyle : null } onClick={ !deposit && this.selectOrderType }>Deposit</BuyButton>
+          <SellButton style={ withdraw ? selectedStyle : null } onClick={ !withdraw && this.selectOrderType }>Withdraw</SellButton>
+          <SellButton style={ sellOrder ? selectedStyle : null } onClick={ !sellOrder && this.selectOrderType }>Sell</SellButton>
         </OrderTypeDiv>
-        {/* <PieChart/> */}
         <Header>Add a New Transaction</Header>
-        <Form buyOrder={ buyOrder } sellOrder={ sellOrder }/>
+        <Form buyOrder={ buyOrder } sellOrder={ sellOrder } withdraw={ withdraw } deposit={ deposit }/>
       </ContainerDiv>
     )
   }

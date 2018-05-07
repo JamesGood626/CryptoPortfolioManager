@@ -67,7 +67,7 @@ class Form extends Component {
   }
   
   render() {
-    const { error, handleSubmit, submitSucceeded, submitting } = this.props
+    const { error, handleSubmit, submitSucceeded } = this.props
     
     const onSubmit = values => {
       this.props.loginUser(values)
@@ -90,6 +90,7 @@ class Form extends Component {
             <Header>Log In</Header>
             { this.renderFields() }
             <SubmitButton isDisabled={ this.props.isAuthenticating } type="submit">Submit</SubmitButton>
+            { this.props.authenticationError ? <h1>{ this.props.authenticationError }</h1> : null }
           </CenteredForm>
         // </ContainerDiv>
       )

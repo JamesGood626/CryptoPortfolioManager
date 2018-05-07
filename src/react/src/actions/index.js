@@ -3,6 +3,7 @@ import { SubmissionError } from 'redux-form'
 import transformProfitLossTransactionList from '../Utils/transformProfitLossTransactionList'
 import extractCrypto from '../Utils/extractCrypto'
 import historicalRateConversion from '../Utils/historicalRateConversion'
+import bitcoinHistoricalRateUSDConversion from '../Utils/bitcoinHistoricalRateUSDConversion'
 import {
   IS_AUTHENTICATING,
   AUTHENTICATE_USER,
@@ -55,26 +56,29 @@ const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' 
 //   -PRETTY MUCH ANY OTHER RESOURCE FETCHED FROM MY DRF API (need to really handle custom error messages on the server)
 
 export const registerUser = values => async dispatch => {
+  dispatch({ type: IS_REGISTERING })
   const userInfo = {
     username: values["username"],
     password: values["password"],
-    password2: values["confirm-password"],
+    password2: values["confirmPassword"],
     email: values["email"]
   }
 
   try {
-    await axios.post(`${REGISTER_USER_URL}`, userInfo)
-    dispatch({ type: REGISTER_USER, payload: true })
+    const response = await axios.post(`${REGISTER_USER_URL}`, userInfo)
+    if (response.status === 201) {
+      console.log("You in the 201")
+      console.log(response)
+      dispatch({ type: REGISTER_USER, payload: true })
+    }
   }
   catch (err) {
     console.log("Error in the catch block of registerUser")
     console.log(err)
-
-    return err
+    if(err.response.data.message) {
+      dispatch({ type: REGISTRATION_ERROR, payload: err.response.data.message })
+    }
   }
-  
-
-  // dispatch({ type: GET_SYMBOL_LIST, payload: refinedSymbolList })
 }
 
 export const loginUser = values => async dispatch => {
@@ -82,29 +86,21 @@ export const loginUser = values => async dispatch => {
   // requires a roundtrip to make it possible. So extending ObtainJWTToken should be done later.
   // Need to work on the backend logic to extend ObtainJWTToken and check if
   // The user is actually registered in order to get the login flow correct.
-
-  // console.log('Login Values')
-  // console.log(values)
   dispatch({ type: IS_AUTHENTICATING })
   try {
     const response = await axios.post(`${LOGIN_USER_URL}`, values)
     const getToken = await axios.post(GET_JWT_URL, values)
-    // console.log("THIS IS GET TOKEN")
-    // console.log(getToken)
-    // console.log("RESPONSE IN LOGIN USER")
-    // console.log(response.status)
     localStorage.setItem('token', getToken.data['token'])
     dispatch({ type: AUTHENTICATE_USER, payload: true })
   }
   catch (err) {
-    console.log("Error in the catch block")
-    // err.message to display network error message
-    // Either return customized error message from server and use err.message
-    // or use err.response.status to determine the type of error and customize the message here
-    console.log(err.message)
-    console.log(err.response.status)
-    dispatch({ type: REGISTRATION_ERROR })
-  } 
+    if(err.response.data) {
+      dispatch({ type: AUTHENTICATION_ERROR, payload: err.response.data.message })
+      return
+    }
+    // Don't know what kind of messages could potentially fall here
+    dispatch({ type: AUTHENTICATION_ERROR, payload: err.message })
+  }
 }
 
 export const signOutUser = () => async dispatch => {
@@ -205,7 +201,28 @@ export const getHistoricalRate = values => async dispatch => {
 
 // *************************************** ABOVE *****************************************************************
 
+export const getBitcoinHistoricalRate = values => async dispatch => {
+  const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+  
+  const feeBTC = bitcoinHistoricalRateUSDConversion.getFeeBTC(historicalBitcoinRateData.data.rate, values.fee)
+  const priceBTC = bitcoinHistoricalRateUSDConversion.getPriceBTC(historicalBitcoinRateData.data.rate, values.price)
 
+  let createOrderDict = {}
+  if(values.deposit) {
+    createOrderDict.buyOrder = values.deposit
+  }
+  else if (values.withdraw) {
+    createOrderDict.sellOrder = values.withdraw
+  }
+  createOrderDict.ticker = values.baseCurrency
+  createOrderDict.quantity = parseFloat(values.quantity).toFixed(6)
+  createOrderDict.purchase_price_btc = priceBTC.toFixed(6)
+  createOrderDict.purchase_price_fiat = parseFloat(values.price).toFixed(6)
+  createOrderDict.exchange_fee_btc = parseFloat(feeBTC).toFixed(6)
+  createOrderDict.exchange_fee_fiat = parseFloat(values.fee).toFixed(2)
+
+  dispatch(addNewCrypto(createOrderDict))
+}
 
 
 
@@ -309,13 +326,15 @@ export const getCryptoAssetList = (values) => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(CRYPTO_ASSET_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
-      .catch(error => {
-        console.log("THIS IS THE ERROR IN getCryptoAssetList")
-        console.log(error.message)
-        // When server isn't running and I get a network error
+      .catch(err => {
+        console.log("THIS IS THE err IN getCryptoAssetList")
+        console.log(err.message)
+        // When server isn't running and I get a network err
         // trying to log this or check it in the if statement crashes my app
-        console.dir(error.response.status)
-        if(error.response.status === 401) {
+        if(err.response) {
+          console.log(err.response.status)
+        }
+        if(err.response.status === 401) {
           dispatch({ type: AUTHENTICATE_USER, payload: false })
         }
       })

@@ -16,14 +16,17 @@ const Div = styled.div`
 
 const ContainerDiv = Div.extend`
   position: relative;
-  z-index: 10;
+  z-index: 1000;
   height: 100vh;
   background-color: #fcfafa;
   box-shadow: 2px 2px 3px #ccc;
 
   @media (max-width: 900px) {
+    position: absolute;
+    top: 0;
+    left: 0;
     flex-direction: row;
-    height: 5.3rem;
+    height: 4rem;
     width: 100vw;
   }
 `
@@ -43,6 +46,10 @@ const NameDiv = Div.extend`
 const P = styled.p`
   margin: 0;
   padding: 0;
+  height: 3rem;
+  width: 3rem;
+  text-align: center;
+  line-height: 3rem;
   color: #fffbfc;
 `
 
@@ -54,6 +61,7 @@ class Navbar extends Component {
   }
 
   toggleOverlay() {
+    console.log("Togglin")
     this.setState({ overlayActive: !this.state.overlayActive })
   }
 

@@ -18,13 +18,8 @@ def fulfill_sell_order(sell_order, BuyOrder, ProfitLossTransaction):
     if buy_order_list.count() > 0:
         create_or_update_profit_loss_transaction(
             sell_order, sell_order.quantity, buy_order_list, ProfitLossTransaction)
-    # Removing this doesn't cause an error, but somehow
-    # An empty buy_order_list is returned.
-    # Will run tests individually to see which one causes this.
-    # else:
-    #     print("The unhandled else")
-    #     print(buy_order_list)
-    #     return
+    else:
+        return
 
 
 def get_buy_order_list(sell_order, BuyOrder):
