@@ -20,7 +20,7 @@ export default function(state = initialState, action) {
       case AUTHENTICATE_USER:
         return {
           ...state,
-          userAuthenticated: action.payload, // This bool flag is giving me issues
+          userAuthenticated: action.payload,
           isAuthenticating: false
         }
       case AUTHENTICATION_ERROR:
@@ -33,22 +33,3 @@ export default function(state = initialState, action) {
         return state
     }
 }
-
-
-
-// import { AUTHENTICATE_USER } from '../actions/types'
-
-// const initialState = {
-//   userAuthenticated: false
-// }
-
-// export default function(state = initialState, action) {
-//     switch (action.type) {
-//       case AUTHENTICATE_USER:
-//         return {
-//           userAuthenticated: action.payload
-//         }
-//       default:
-//         return state
-//     }
-// }

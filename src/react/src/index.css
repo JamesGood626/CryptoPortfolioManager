@@ -13,10 +13,36 @@ body {
   background-color: #fcfafa;
 }
 
-.svgSelection {
-  height: 100%;
-  width: 100%;
-  background: blue;
+.pieChartDimensions {
+  height: 45vh;
+  width: 70vw;
+}
+
+.barChartDimensions {
+  height: 45vh;
+  width: 70vw;
+  padding: 1rem 2rem;
+  margin: 0;
+}
+
+@media (max-width: 748px) {
+  .pieChartDimensions {
+    width: 100vw;
+  }
+
+  .barChartDimensions {
+    width: 100vw;
+  }
+}
+
+@media (min-width: 1280px) {
+  .barChartDimensions {
+    height: 50vh;
+    width: 45vw;
+  }
+  .pieChartDimensions {
+    height: 50vh;
+  }
 }
 
 .bar--negative {
@@ -94,8 +120,8 @@ currencyDropDown.js Styles
 }
 
 .dropDownListItem:hover {
-    cursor: pointer;
-    background-color: #4eb089;
+  cursor: pointer;
+  background-color: #4eb089;
 }
 
 #currencyImg {

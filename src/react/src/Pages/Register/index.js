@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import Form from './Form'
 
-import PieChart from '../../SharedComponents/D3Components/PieChart'
-
 const ContainerDiv = styled.div`
   display: flex;
   justify-content: center;
@@ -12,13 +10,11 @@ const ContainerDiv = styled.div`
   width: 100vw;
 `
 
-
 class Register extends Component {
   render() {
     return (
       <ContainerDiv>
         <Form/>
-        {/* <PieChart/> */}
       </ContainerDiv>
     )
   }

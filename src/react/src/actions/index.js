@@ -48,12 +48,6 @@ const CURRENCY_CONVERSION_API_BASE_URL = 'https://openexchangerates.org/api/late
 const CRYPTO_PERFORMANCE_API_BASE_URL = 'https://api.coinmarketcap.com/v1/ticker/'
 const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' // + {asset_id_base}/{asset_id_quote}?time={time}
 
-// Error edge cases to be handled
-//   -User Registration
-//   -User Login
-//   -Coinmarket API error response
-//   -Crypto currency historical rate API (CoinApi is already giving me enough problems as it is)
-//   -PRETTY MUCH ANY OTHER RESOURCE FETCHED FROM MY DRF API (need to really handle custom error messages on the server)
 
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
@@ -67,14 +61,10 @@ export const registerUser = values => async dispatch => {
   try {
     const response = await axios.post(`${REGISTER_USER_URL}`, userInfo)
     if (response.status === 201) {
-      console.log("You in the 201")
-      console.log(response)
       dispatch({ type: REGISTER_USER, payload: true })
     }
   }
   catch (err) {
-    console.log("Error in the catch block of registerUser")
-    console.log(err)
     if(err.response.data.message) {
       dispatch({ type: REGISTRATION_ERROR, payload: err.response.data.message })
     }
@@ -82,10 +72,6 @@ export const registerUser = values => async dispatch => {
 }
 
 export const loginUser = values => async dispatch => {
-  // Update to below: I said this, but the current implementation works aswell, only it
-  // requires a roundtrip to make it possible. So extending ObtainJWTToken should be done later.
-  // Need to work on the backend logic to extend ObtainJWTToken and check if
-  // The user is actually registered in order to get the login flow correct.
   dispatch({ type: IS_AUTHENTICATING })
   try {
     const response = await axios.post(`${LOGIN_USER_URL}`, values)
@@ -98,16 +84,11 @@ export const loginUser = values => async dispatch => {
       dispatch({ type: AUTHENTICATION_ERROR, payload: err.response.data.message })
       return
     }
-    // Don't know what kind of messages could potentially fall here
     dispatch({ type: AUTHENTICATION_ERROR, payload: err.message })
   }
 }
 
 export const signOutUser = () => async dispatch => {
-  // To be used whenever a 401 error is recieved in response to navigating
-  // to a component that dispatches a request to DRF API
-  // OR when the user logs out
-  console.log("signing out")
   dispatch({ type: AUTHENTICATE_USER, payload: false })
 }
 
@@ -131,42 +112,17 @@ export const getHistoricalRate = values => async dispatch => {
   const ratioDifference = historicalRateConversion.getRatioDifference(historicalOrderRateData.data.rate, values.price)
   const trueUSDHistoricalRate = historicalRateConversion.getTrueHistoricalRate(ratioDifference, historicalRateUSDConversion.data.rate)
 
-  // *************EVERYTHING ABOVE THIS LINE CHECKS OUT***************
-
-
-
   // In the case above it was a matter of converting between the ICX/BTC price per unit to the price of USD/BTC, and as such
   // you'd need to divide the much lower price that is obtained through trueUSDHistoricalRate USD/BTC into the much higher
   // values.price rate for ICX/BTC result being around 11 dollars.
   const historicalUSDPricePerUnit = values.price / trueUSDHistoricalRate
 
-  console.log("This is the Historical USD Price Per Unit")
-  console.log(historicalUSDPricePerUnit)
-
-  // historicalUSDPricePerUnit is effectively the rate you would obtain if you were to make a request ICX/USD (which isn't a thing for this api)
+  // historicalUSDPricePerUnit is effectively the rate you would obtain if you were to make a request ICX/USD (which isn't an available pair for this api)
   // and as such, multiplying in this instance is much like utilizing the percentage of that 0 through 1 value of ICX to obtain the fee USD
   // because the fee in the buy order is the base currency (which in this case is ICX)
   let feeUSD = historicalUSDPricePerUnit * values.fee
 
-
-  console.log("THIS IS THE FEE USD")
-  console.log(feeUSD)
-
-  // ********************************************** TEST ABOVE ********************** and below...
-
-
-
-  // Need to test the functions that are in getHistoricalBitcoinPriceInfo
-  // And Also need to ensure that appropriate decimal values are being assigned to the createOrderObject (i.e. ensure rounding isn't getting out of hand)
   const bitcoinPriceInfo = await historicalRateConversion.getHistoricalBitcoinPriceInfo(values, ratioDifference, historicalOrderRateData , COIN_API_HISTORICAL_RATE_URL, COIN_API_KEY)
-  
-
-  console.log("THIS IS THE BITCOIN HISTORICAL DATA:")
-  console.log(bitcoinPriceInfo)
-
-  console.log("TYPE OF historicalUSDPricePerUnit")
-  console.log(typeof historicalUSDPricePerUnit)
-
 
   let createOrderDict = {}
   if(values.buyOrder) {
@@ -187,19 +143,15 @@ export const getHistoricalRate = values => async dispatch => {
     createOrderDict.exchange_fee_btc = parseFloat(bitcoinPriceInfo.feeBTC).toFixed(6)
     createOrderDict.exchange_fee_fiat = feeUSD.toFixed(2)
   }
-  // returns an object with 
+  // Creates an object with the following properties:
   // quantity
   // purchase_price_btc
   // purchase_price_fiat
   // exchange_fee_btc
   // exchange_fee_fiat
 
-  console.log("Create Order Dict before addNewCrypto call")
-  console.log(createOrderDict)
   dispatch(addNewCrypto(createOrderDict))
 }
-
-// *************************************** ABOVE *****************************************************************
 
 export const getBitcoinHistoricalRate = values => async dispatch => {
   const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
@@ -210,38 +162,30 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
   let createOrderDict = {}
   if(values.deposit) {
     createOrderDict.buyOrder = values.deposit
+    createOrderDict.purchase_price_btc = priceBTC.toFixed(6)
+    createOrderDict.purchase_price_fiat = parseFloat(values.price).toFixed(6)
   }
   else if (values.withdraw) {
     createOrderDict.sellOrder = values.withdraw
+    createOrderDict.sell_price_btc = priceBTC.toFixed(6)
+    createOrderDict.sell_price_fiat = parseFloat(values.price).toFixed(6)
   }
   createOrderDict.ticker = values.baseCurrency
   createOrderDict.quantity = parseFloat(values.quantity).toFixed(6)
-  createOrderDict.purchase_price_btc = priceBTC.toFixed(6)
-  createOrderDict.purchase_price_fiat = parseFloat(values.price).toFixed(6)
   createOrderDict.exchange_fee_btc = parseFloat(feeBTC).toFixed(6)
   createOrderDict.exchange_fee_fiat = parseFloat(values.fee).toFixed(2)
 
+  console.log('THE CREATE ORDER DICT')
+  console.log(createOrderDict)
   dispatch(addNewCrypto(createOrderDict))
 }
-
-
-
 
 export const addNewCrypto = values => async dispatch => {
   console.log("Values passed into addNewCrypto")
   console.log(values)
-  // const orderInfo = {
-  //       ticker: values["ticker"],
-  //       quantity: values["quantity"],
-  //       exchange_fee_btc: values["exchange_fee_btc"],
-  //       exchange_fee_fiat: values["exchange_fee_fiat"]
-  // }
-  // Branching if/else statement to post to separate api url based upon buy/sell option
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     if(values['buyOrder']) {
-      // orderInfo.purchase_price_btc = values["purchase_price_btc"]
-      // orderInfo.purchase_price_fiat = values["purchase_price_fiat"]
       axios.post(`${ADD_NEW_BUY_ORDER_URL}`, values, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
         .then(function (response) {
           console.log(response)
@@ -251,8 +195,6 @@ export const addNewCrypto = values => async dispatch => {
         })
     }
     else if(values['sellOrder']) {
-      // orderInfo.sell_price_btc = values["sell_price_btc"]
-      // orderInfo.sell_price_fiat = values["sell_price_fiat"]
       axios.post(`${ADD_NEW_SELL_ORDER_URL}`, values, { headers: {Authorization: `JWT ${AUTH_TOKEN}` } })
         .then(function (response) {
           console.log(response)
@@ -262,11 +204,6 @@ export const addNewCrypto = values => async dispatch => {
         })
     }
   }
-  
-  // const res = posts.data
-
-  // dispatch({ type: GET_SYMBOL_LIST, payload: res })
-  console.log('Submit successful')
 }
 
 export const getBuyOrderList = (values) => async dispatch => {
@@ -327,18 +264,10 @@ export const getCryptoAssetList = (values) => async dispatch => {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(CRYPTO_ASSET_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
       .catch(err => {
-        console.log("THIS IS THE err IN getCryptoAssetList")
-        console.log(err.message)
-        // When server isn't running and I get a network err
-        // trying to log this or check it in the if statement crashes my app
-        if(err.response) {
-          console.log(err.response.status)
-        }
         if(err.response.status === 401) {
           dispatch({ type: AUTHENTICATE_USER, payload: false })
         }
       })
-    // This is where you'll need to handle the logic associated with receiving a 401 error upon token expiry
     if(response) {
       const filteredCryptos = await extractCrypto.requestUntilFulfilled(0, 50, CRYPTO_PERFORMANCE_API_BASE_URL, response.data)
 
@@ -347,42 +276,3 @@ export const getCryptoAssetList = (values) => async dispatch => {
     }
   }
 }
-
-
-
-
-
-// *************************************** BELOW *****************************************************************
-
-export const updateUserFiatOption = (data) => async dispatch => {
-  const AUTH_TOKEN = localStorage.getItem('token')
-  axios.post(`${UPDATE_USER_FIAT_OPTION_URL}`, data, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
-  // THIS IS WHERE I WOULD DO THE CURRENCY CONVERSION... HOWEVER THE IDEAL API COSTS MONEIES
-    // .then(function (response) {
-    //   console.log("THE TO CURRENCY")
-    //   console.log(data.abbreviated_currency)
-    //   console.log("THE FROM CURRENCY")
-    //   console.log(data.fromCurrency)
-
-    //   if (response.status === 200) {
-    //     const base_currency = data.fromCurrency
-    //     const to_currency = data.abbreviated_currency
-    //     const options = `?app_id=${CURRENCY_CONVERSION_APP_ID}&base=${base_currency}&symbols=${to_currency}`
-    //     axios.get(`${CURRENCY_CONVERSION_API_BASE_URL}${options}`)
-    //       .then(response => console.log(response))
-          
-    //     // fire off CurrencyLayer API call
-    //     // CURRENCY_CONVERSION_API_BASE_URL
-    //     // ? access_key = YOUR_ACCESS_KEY
-    //     // & from = data.fromCurrency
-    //     // & to = data.abbreviated_currency
-    //     // & amount = All of the necessary models to convert which are stored in redux store..
-
-    //   }
-    // })
-    // .catch(function (error) {
-    //   console.log(error)
-    // })
-}
-
-// *************************************** ABOVE *****************************************************************

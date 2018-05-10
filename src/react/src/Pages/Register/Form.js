@@ -9,15 +9,11 @@ import Header from '../../SharedComponents/FormComponents/header'
 import SubmitButton from '../../SharedComponents/submitButton'
 import validateEmails from '../../Utils/validateEmail'
 
-// import ErrorBoundary from '../ErrorBoundary'
-
-
-// UTILIZE THE COMMENTED OUT VALIDATE REDUX FORM - AFTER IMPLEMENTING REGISTRATION SPECIFIC LOGIC/FILTRATION
 
 const CenteredForm = styled.form`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   font-family: 'Quattrocento', serif;
   width: 20rem;
@@ -41,6 +37,11 @@ const SuccessDiv = styled.div`
   margin: auto;
   font-size: 2rem;
   color: #274156;
+`
+
+const AuthenticationError = styled.p`
+  color: #1c1c1c;
+  font-size: 1.2rem;
 `
 
 const FIELDS = [
@@ -77,7 +78,7 @@ class Form extends Component {
   }
   
   render() {
-    const { handleSubmit, submitSucceeded, isRegistering } = this.props
+    const { handleSubmit, submitSucceeded, isRegistering, registrationError } = this.props
     const onSubmit = values => { this.props.registerUser(values) }
     
     if(this.props.userRegistered) {
@@ -90,8 +91,7 @@ class Form extends Component {
           <Header>Register</Header>
           { this.renderFields() } 
           <SubmitButton idDisabled={ isRegistering } type="submit">Submit</SubmitButton>
-          {/* Style this, it correctly notifies a user if the username is already taken */}
-          { this.props.registrationError ? <h1>{ this.props.registrationError }</h1>  : null }
+          { registrationError ? <AuthenticationError>{ registrationError }</AuthenticationError> : null }
         </CenteredForm>
     )
   }

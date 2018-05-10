@@ -14,14 +14,22 @@ import ErrorBoundary from '../ErrorBoundary'
 const CenteredForm = styled.form`
   display: flex;
   flex-direction: column;
-  height: 22rem;
-  width: 20rem;
+  justify-content: space-between;
+  align-items: center;
+  height: 16rem;
+  width: 18rem;
   font-family: 'Quattrocento', serif;
   background: #c21500;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   border-bottom-left-radius: 25px;
   box-shadow: 2px 2px 4px #aaa;
+
+  @media (min-width: 742px) {
+    height: 24rem;
+    width: 22rem;
+    margin-bottom: 1rem;
+  }
 
   @media (min-width: 900px) {
     height: 26rem;
@@ -33,7 +41,8 @@ const CenteredForm = styled.form`
 const FormDiv = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
+  
   width: 100%;
 `
 
@@ -98,14 +107,14 @@ class Form extends Component {
   
   render() {
     const { 
-      handleSubmit, 
-      reset, 
-      submitSucceeded, 
-      symbolList, 
-      buyOrder, 
-      sellOrder, 
-      deposit, 
-      withdraw 
+      handleSubmit,
+      reset,
+      submitSucceeded,
+      symbolList,
+      buyOrder,
+      sellOrder,
+      deposit,
+      withdraw
     } = this.props
     
     const onSubmit = (values) => {
@@ -118,7 +127,6 @@ class Form extends Component {
         else if (sellOrder) {
           values.sellOrder = true
         }
-        console.log(values)
         this.props.getHistoricalRate(values)
       }
       if(deposit || withdraw) {
@@ -128,7 +136,6 @@ class Form extends Component {
         else if (withdraw) {
           values.withdraw = true
         }
-        console.log(values)
         this.props.getBitcoinHistoricalRate(values)
       }
     }
@@ -139,11 +146,10 @@ class Form extends Component {
 
     return(
       <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
-        <FormDiv>
           <datalist id="cryptos">
             { Array.isArray(symbolList) ? 
               symbolList.map((symbol, index) => {
-                  return(
+                  return (
                     <option key={ index } value={ symbol }/>
                   )
                 }) 
@@ -152,28 +158,17 @@ class Form extends Component {
           </datalist>
           { this.props.withdraw || this.props.deposit ? this.renderFields(true) : this.renderFields() }
           <SubmitButton type="submit">Submit</SubmitButton>
-        </FormDiv>
       </CenteredForm>
     )
   }
 }
 
-// GET YOUR REGEX ON!!!!!!!
-
+// add more regex to prevent scripting
 function validate(values) {
   const errors = {}
 
   errors.dateTime = validateDateTime(values.dateTime || '')
-  
-  // if(!values.name || values.name.length < 3) {
-  //   errors.name = 'Enter your Name'
-  // }
-  // if(!values.email) {
-  //   errors.email = 'Enter your Email Address'
-  // }
-  // if(!values.projectInfo) {
-  //   errors.projectInfo = 'Please provide some information about your project'
-  // }
+
   return errors
 }
 

@@ -33,22 +33,3 @@ export default function(state = initialState, action) {
         return state
     }
 }
-
-
-
-// import { AUTHENTICATE_USER } from '../actions/types'
-
-// const initialState = {
-//   userAuthenticated: false
-// }
-
-// export default function(state = initialState, action) {
-//     switch (action.type) {
-//       case AUTHENTICATE_USER:
-//         return {
-//           userAuthenticated: action.payload
-//         }
-//       default:
-//         return state
-//     }
-// }

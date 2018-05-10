@@ -9,9 +9,6 @@ import TransactionTable from './transactionTable'
 
 import capitalizeTitles from '../../Utils/capitalizeTitles'
 
-// ******************* To-Do *************************
-// Need to handle the exception for when there is no pl_transactions....
-// LOOK INTO ADVANCED REACT PATTERNS AND POSSIBLY REFACTOR THE CURRENT TransactionTable design
 
 const ContainerDiv = styled.div`
   display: flex;
@@ -87,40 +84,33 @@ class Transactions extends Component {
       sellOrderTitles: [],
       profitLossTransactionTitles: []
     }
-
-    this.selectDisplayType = this.selectDisplayType.bind(this)
-    this.setDisplayFalse = this.setDisplayFalse.bind(this)
-    this.toggleDisplayBuy = this.toggleDisplayBuy.bind(this)  
-    this.toggleDisplaySell = this.toggleDisplaySell.bind(this)
-    this.toggleDisplayActualizedPL = this.toggleDisplayActualizedPL.bind(this)
-    this.capitalizeTitleArray = this.capitalizeTitleArray.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.props.getBuyOrderList()
     this.props.getSellOrderList()
     this.props.getProfitLossTransactionList()
   }
 
-  toggleDisplayBuy() {
+  toggleDisplayBuy = () => {
     this.setState((prevState, state) => ({
         displayBuyOrders: !prevState.displayBuyOrders
     }))
   }
 
-  toggleDisplaySell() {
+  toggleDisplaySell = () => {
     this.setState((prevState, state) => ({
         displaySellOrders: !prevState.displaySellOrders
     }))
   }
 
-  toggleDisplayActualizedPL() {
+  toggleDisplayActualizedPL = () => {
     this.setState((prevState, state) => ({
         displayActualizedPL: !prevState.displayActualizedPL
     }))
   }
 
-  setDisplayFalse(displayBuyOrders, displaySellOrders, displayActualizedPL) {
+  setDisplayFalse = (displayBuyOrders, displaySellOrders, displayActualizedPL) => {
     if (displayBuyOrders) {
       this.toggleDisplayBuy()
     }
@@ -132,7 +122,7 @@ class Transactions extends Component {
     }
   }
 
-  selectDisplayType(e) {
+  selectDisplayType = e => {
     const { displayBuyOrders, displaySellOrders, displayActualizedPL } = this.state
     this.setDisplayFalse(displayBuyOrders, displaySellOrders, displayActualizedPL)
     if (e.target.innerHTML === "Buy Orders") {
@@ -150,13 +140,13 @@ class Transactions extends Component {
   // if (this.props.buyOrderList[0] && this.state.buyOrderTitles.length === 0) {
   //   this.capitalizeTitleArray(this.props.buyOrderList[0], this.state.buyOrderTitles, buyOrderTitles)
   // }
-  capitalizeTitleArray(modelObj, titleState, titleStateKey) {
-      let keyList = Object.getOwnPropertyNames(modelObj)
-      let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
-      this.setState((prevState, state) => ({
-        titleStateKey: newTitleArr
-      }))
-  }
+  // capitalizeTitleArray = (modelObj, titleState, titleStateKey) => {
+  //     let keyList = Object.getOwnPropertyNames(modelObj)
+  //     let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
+  //     this.setState((prevState, state) => ({
+  //       titleStateKey: newTitleArr
+  //     }))
+  // }
 
   render() {
     if (this.props.buyOrderList) {
@@ -171,7 +161,6 @@ class Transactions extends Component {
     }
     
     if (this.props.sellOrderList) {
-      console.log(this.props.sellOrderList)
       const sellOrderObj = this.props.sellOrderList[0]
       if(sellOrderObj && this.state.sellOrderTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(sellOrderObj)
@@ -193,8 +182,19 @@ class Transactions extends Component {
       }
     }
         
-    const { displayBuyOrders, displaySellOrders, displayActualizedPL, buyOrderTitles, sellOrderTitles, profitLossTransactionTitles } = this.state
-    const { buyOrderList, sellOrderList, refinedProfitLossTransactionList } = this.props
+    const { 
+      displayBuyOrders, 
+      displaySellOrders, 
+      displayActualizedPL, 
+      buyOrderTitles, 
+      sellOrderTitles, 
+      profitLossTransactionTitles 
+    } = this.state
+    const { 
+      buyOrderList, 
+      sellOrderList, 
+      refinedProfitLossTransactionList 
+    } = this.props
     const selectedStyle = {
       'color': '#fcfafa',
       'background': '#c21500',
@@ -243,7 +243,6 @@ class Transactions extends Component {
             Actualized P/L
           </DisplaySelectButton>
         </OrderTypeDiv>
-
         <TableContainerDiv>
           <TransactionTable
             buy_order_config={ displayBuyOrders && config.buy_order }

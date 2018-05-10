@@ -2,56 +2,51 @@ import React, { Component } from 'react'
 import * as d3 from 'd3'
 
 class BarChart extends Component {
-  // constructor(props) {
-  //   super(props)
-
-  //   this.state = {
-  //     count: 0
-  //   }
-  // }
-
-  // componentDidMount() {
-  //   if(this.barChartSvg) {
-  //     console.log("Doing stuff in bar Chart")
-
-
-  //     // comment out in actual use
-  //     this.doD3Stuff()
-  //   }
-  // }
-
-  componentDidUpdate() {
-    console.log("ITLL BE HERE ON UPDATE")
-    console.log(this.props.barChartData)
-    if(this.props.barChartData) {
-      this.doD3Stuff(this.props.barChartData)
+  componentDidMount = () => {
+    const { barChartData } = this.props
+    if(barChartData) {
+      const svgDimensions = this.returnSvgDimensions()
+      this.doD3Stuff(svgDimensions, svgDimensions/2.2, barChartData)
+      window.addEventListener('resize', this.handleResize)
     }
-    // if(this.props.pieChartData && this.state.count === 0) {
-    //   console.log("THIS IS STATE COUNT")
-    //   console.log(this.state.count)
-      
-    //   this.setState((prevState, state) => ({
-    //     count: ++prevState.count
-    //   }))
-    // }
   }
 
-  doD3Stuff = (data) => {
-    console.log('FINALLY RUNNING D3DOSTUFF BARCHART')
-    // const data = [
-    //   {number: 200, name: "ICX"},
-    //   {number: 150, name: "BTC"},
-    //   {number: 40, name: "ENG"},
-    //   {number: 300, name: "DENT"},
-    //   {number: 220, name: "ADA"},
-    //   {number: 80, name: "LUX"},
-    //   {number: 200, name: "ETH"},
-    //   {number: -200, name: "MKR"}
-    // ]
+  componentDidUnmount = () => {
+    window.removeEventListener('resize', this.handleResize)
+  }
+
+  handleResize = e => {
+    let newWidth = this.returnSvgDimensions()
+    this.doD3Stuff(newWidth, newWidth/2.2, this.props.barChartData)
+  }
+
+  returnSvgDimensions = () => {
+    if (window.innerWidth <= 480) {
+      return window.innerWidth*1.1
+    }
+    else if (window.innerWidth > 480 && window.innerWidth <= 660) {
+      return window.innerWidth/1.2
+    }
+    else if (window.innerWidth > 660 && window.innerWidth <= 880) {
+      return window.innerWidth/1.4
+    }
+    else if (window.innerWidth > 880 && window.innerWidth <= 1024) {
+      return window.innerWidth/1.6
+    }
+    else if (window.innerWidth > 1024 && window.innerWidth <= 1280) {
+      return window.innerWidth/1.8
+    }
+    else {
+      return window.innerWidth/2.6
+    }
+  }
+
+  doD3Stuff = (widthNum, heightNum, data) => {
+    d3.selectAll("svg > *").remove()
     
     var margin = {top: 20, right: 30, bottom: 40, left: 30},
-      width = 660 - margin.left - margin.right,
-      height = 300 - margin.top - margin.bottom;
+      width = widthNum - margin.left - margin.right,
+      height = heightNum - margin.top - margin.bottom;
 
     var x = d3.scaleLinear()
           .range([0, width]),
@@ -64,10 +59,9 @@ class BarChart extends Component {
     var svg = d3.select(this.barChartSvg)
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
-      
+
     var g = svg.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
     x.domain(d3.extent(data, function(d) { return d.number })).nice()
     y.domain(data.map(function(d) { return d.name }))
 
@@ -118,14 +112,14 @@ class BarChart extends Component {
 
     svg.append("g")
 			.attr("class", "x axis")
-			.attr("transform", "translate(0," + height + ")")  
+      .attr("transform", "translate(0," + height + ")")
 			.call(xAxis)
 			
     // add tickNegative /** The x(25) as opposed to x(0) made the bars align with yAxis */
     // However, I just added a transform to all of the bars
 		var tickNeg = svg.append("g")
         .attr("class", "y axis")
-				.attr("transform", "translate(" + x(0) + ",0)")
+        .attr("transform", "translate(" + x(0) + ",0)")
 				.call(yAxis)
 			.selectAll(".tick")
 			.filter(function(d, i) { return data[i].number < 0 })
@@ -139,13 +133,9 @@ class BarChart extends Component {
   }
 
   render() {
-    const styles = {
-      // 'background': '#0ee',
-      'padding': '1rem 2rem'
-    }
     return [
       <div class="tooltip"/>,
-      <svg style={styles} ref={x => this.barChartSvg = x}></svg>
+      <svg className="barChartDimensions"ref={ x => this.barChartSvg = x }></svg>
     ]
   }
 }

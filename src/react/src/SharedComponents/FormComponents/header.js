@@ -9,19 +9,23 @@ const ContainerDiv = styled.div`
   margin: 0;
   padding: 0;
   height: 4.5rem;
-  width: 20rem;
+  width: 18rem;
   background-color: #fffbfc;
   font-size: .7rem;
   color: #c21500;
   border-top-right-radius: 25px;
   box-shadow: 2px 2px 3px #ccc;
 
+
+  @media (min-width: 742px) {
+    width: 22rem;
+  }
+
   @media (min-width: 900px) {
     height: 5.5rem;
     width: 24rem;
   }
 `
-
 
 const header = (props) => {
   return (

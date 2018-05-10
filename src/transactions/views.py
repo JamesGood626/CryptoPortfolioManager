@@ -3,8 +3,10 @@ from django.db.models import Q
 
 from decimal import Decimal
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_201_CREATED
+)
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
@@ -20,12 +22,6 @@ from rest_framework.generics import (
 )
 
 from rest_framework import permissions
-# (
-#     AllowAny,
-#     IsAuthenticated,
-#     IsAdminUser,
-#     IsAuthenticatedOrReadOnly,
-# )
 
 from .models import (
     BuyOrder,
@@ -43,9 +39,6 @@ from .serializers import (
 
 from portfolio.models import CryptoAsset
 
-# Need to ensure that a negative number may not be entered
-# for quantity or purchase_price fields
-
 
 class BuyOrderCreateAPIView(CreateAPIView):
     queryset = BuyOrder.objects.all()
@@ -53,7 +46,6 @@ class BuyOrderCreateAPIView(CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        print(request.data)
         buy_order_data = {
             'user': request.user.id,
             'ticker': request.data['ticker'],
@@ -65,26 +57,19 @@ class BuyOrderCreateAPIView(CreateAPIView):
         }
         serializer = BuyOrderCreateSerializer(data=buy_order_data)
         if not serializer.is_valid():
-            # Printing errors helped immensely
-            print(serializer.errors)
-            return Response("There seems to have been an error.")
+            # print(serializer.errors)
+            content = "An error occurred"
+            return Response(content, status="HTTP_400_BAD_REQUEST")
         serializer.save()
         return redirect('/login')
-
-# Need to ensure that a negative number may not be entered
-# for quantity or purchase_price fields
 
 
 class SellOrderCreateAPIView(CreateAPIView):
     queryset = SellOrder.objects.all()
     serializer_class = SellOrderCreateSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        # print("Info from inside SellOrderCreateAPIView")
-        # print(request.body)
-        # print(request.user.id)
-        # print(request.data)
         qs = CryptoAsset.objects.filter(
             user=request.user.id,
             ticker=request.data['ticker'],
@@ -93,10 +78,6 @@ class SellOrderCreateAPIView(CreateAPIView):
         print(qs.count())
         print('THIS IS THE FIRST QS ITEM')
         print(qs[0].quantity)
-        # What follows the and prevents a sell order that would result in a
-        # negative crypto asset quantity from being executed.
-        # Will still need to handle the error accordingly.
-        # And I could benefit from writing a test to ensure that an exception is raised accordingly.
         if qs.count() == 1 and (qs[0].quantity - Decimal(request.data['quantity'])) >= 0:
             sell_order_data = {
                 'user': request.user.id,
@@ -109,11 +90,10 @@ class SellOrderCreateAPIView(CreateAPIView):
             }
             serializer = SellOrderCreateSerializer(data=sell_order_data)
             if not serializer.is_valid():
-                # Printing errors helped immensely
-                print(serializer.errors)
                 return Response("There seems to have been an error.")
             serializer.save()
-            return redirect('/portfolio/update')
+            content = "Sell Order was successful."
+            return Response(content, status=HTTP_201_CREATED)
         return Response('You do not currently own that crypto')
 
 
@@ -123,8 +103,6 @@ class BuyOrderListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        print('request user')
-        print(request.user)
         queryset = BuyOrder.objects.filter(user=request.user.id)
         buy_order_list = []
         for buy_order in queryset:
@@ -146,8 +124,6 @@ class SellOrderListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        print('request user')
-        print(request.user)
         queryset = SellOrder.objects.filter(user=request.user.id)
         sell_order_list = []
         for sell_order in queryset:
@@ -183,6 +159,5 @@ class ProfitLossTransactionListView(ListAPIView):
                 'exchange_fee_btc': pl_transaction.exchange_fee_btc,
                 'gain_loss_percentage': pl_transaction.gain_loss_percentage,
             }
-            print(data)
             pl_transaction_list.append(data)
         return Response(pl_transaction_list)

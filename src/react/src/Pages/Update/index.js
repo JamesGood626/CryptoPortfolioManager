@@ -1,26 +1,24 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-// import CurrencyDropDown from '../../SharedComponents/FormComponents/currencyDropDown'
 import Header from '../../SharedComponents/FormComponents/header'
 import Form from './Form'
-
 import PieChart from '../../SharedComponents/D3Components/PieChart'
 
 
 const ContainerDiv= styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 
-  @media (min-width: 900px) {
-    justify-content: center;
-  }
+  // @media (min-width: 900px) {
+  //   justify-content: center;
+  // }
 `
 
 const OrderTypeDiv = styled.div`
@@ -42,12 +40,11 @@ const OrderTypeDiv = styled.div`
 `
 
 const BuyButton = styled.button`
-  width: 5.5rem;
-  height: 2.8rem;
+  width: 4rem;
+  height: 2rem;
   margin: 0;
-  margin-right: 2rem;
   font-size: 2vh;
-  line-height: 2.8rem;
+  line-height: 2rem;
   text-align: center;
   color: #fcfafa;
   background: #aaa;
@@ -55,7 +52,12 @@ const BuyButton = styled.button`
   border-bottom-left-radius: 14px;
   box-shadow: 2px 2px 3px #ccc;
 
-
+  @media (min-width: 900px) {
+    width: 5.5rem;
+    height: 2.8rem;
+    line-height: 2.8rem;
+    margin-right: 1.6rem;
+  }
   @media (min-height: 740px) {
     font-size: 0.9rem;
   }
@@ -69,12 +71,11 @@ const BuyButton = styled.button`
 `
 
 const SellButton = styled.button`
-  width: 5.5rem;
-  height: 2.8rem;
+  width: 4rem;
+  height: 2rem;
   margin: 0;
-  margin-left: 2rem;
   font-size: 2vh;
-  line-height: 2.8rem;
+  line-height: 2rem;
   text-align: center;
   color: #fcfafa;
   background: #aaa;
@@ -82,6 +83,12 @@ const SellButton = styled.button`
   border-bottom-right-radius: 14px;
   box-shadow: 2px 2px 3px #ccc;
 
+  @media (min-width: 900px) {
+    width: 5.5rem;
+    height: 2.8rem;
+    line-height: 2.8rem;
+    margin-left: 1.6rem;
+  }
 
   @media (min-height: 740px) {
     font-size: 0.9rem;
@@ -95,12 +102,7 @@ const SellButton = styled.button`
   }
 `
 
-type State = {
-  buyOrder: boolean,
-  sellOrder: boolean
-}
-
-class Update extends Component<State> {
+class Update extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -174,7 +176,6 @@ class Update extends Component<State> {
 
     return (
       <ContainerDiv>
-        {/* <CurrencyDropDown/> */}
         <OrderTypeDiv>
           <BuyButton style={ buyOrder ? selectedStyle : null } onClick={ !buyOrder && this.selectOrderType }>Buy</BuyButton>
           <BuyButton style={ deposit ? selectedStyle : null } onClick={ !deposit && this.selectOrderType }>Deposit</BuyButton>

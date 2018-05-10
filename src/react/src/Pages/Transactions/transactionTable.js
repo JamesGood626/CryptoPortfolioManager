@@ -2,11 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 
-// IF ADVANCED REACT PATTERNS DON'T HELP ME FIND A BETTER DESIGN FOR THIS, 
-// THEN REFACTOR TO HANDLE THE LOGIC OUTSIDE OF THE RETURN STATEMENT
-
 const TableDiv = styled.div`
-  height: 50vh;
+  height: 40vh;
   width: 100%;
   overflow: auto;
   margin: 0;
@@ -14,7 +11,7 @@ const TableDiv = styled.div`
 `
 
 const NotificationDiv = styled.div`
-  height: 50vh;
+  height: 40vh;
   width: 100%;
   padding: 1rem 1rem 0 1rem;
   text-align: center;
@@ -75,26 +72,26 @@ const transactionTable = ({ buy_order_config, sell_order_config, pl_transaction_
               })
               :
               null
-            } 
+            }
           </Tr>
         </thead>
         <tbody>
-          { config.list && config.list[0] 
+          { config.list && config.list[0]
             ?
             config.list.map(item => {
               return (
                 <Tr>
-                  { 
+                  {
                     keys.map(property => {
                       return <Td>{ item[property] }</Td>
                     })
                   }
                 </Tr>
               )
-            }) 
+            })
             :
             null
-          }   
+          }
         </tbody>
       </Table>
     </TableDiv>

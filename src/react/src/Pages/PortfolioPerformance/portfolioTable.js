@@ -3,11 +3,15 @@ import styled from 'styled-components'
 
 
 const TableDiv = styled.div`
-  height: 40%;
+  height: 40vh;
   width: 100%;
   overflow: auto;
   margin: 0;
   background-color: #fcfafa;
+  
+  @media (max-width: 749px) {
+    height: 30vh;
+  }
 `
 
 const Table = styled.table`
@@ -23,10 +27,6 @@ const Th = styled.th`
   border: .1rem solid #1C1C1C;
   font-size: 2.2vh;
   color: #1C1C1C;
-
-  // @media (min-width: 900px) {
-  //   font-size: 1rem;
-  // }
 `
 
 const Tr = styled.tr`
@@ -77,12 +77,3 @@ const portfolioTable = ({ titles, cryptoAssetList }) => {
 }
 
 export default portfolioTable
-
-// return (
-//                 <Tr>
-//                   <Td>{ cryptoAsset.ticker }</Td>
-//                   <Td>{ cryptoAsset.quantity }</Td>
-//                   <Td>{ cryptoAsset.initial_investment_fiat }</Td>
-//                   <Td>{ cryptoAsset.initial_investment_btc }</Td>
-//                 </Tr>
-//               )

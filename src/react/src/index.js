@@ -22,7 +22,6 @@ const store = createStore(reducers, {}, applyMiddleware(reduxThunk))
 
 const token = localStorage.getItem('token')
 if(token) {
-  console.log("This is the token ", token)
   store.dispatch({ type: AUTHENTICATE_USER, payload: true })
 }
 

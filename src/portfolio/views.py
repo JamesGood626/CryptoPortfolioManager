@@ -10,30 +10,11 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.generics import ListAPIView
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
-# from rest_framework import generics
-# from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-# from rest_framework.views import APIView
-# from rest_framework import status
-
-# from rest_framework.permissions import (
-#     AllowAny,
-#     IsAuthenticated,
-#     IsAdminUser,
-#     IsAuthenticatedOrReadOnly,
-# )
-
-# from django.db.models import Q
-# from django.shortcuts import redirect
-
 from .models import CryptoAsset
 
 from .serializers import (
     CryptoAssetSerializer,
 )
-
-
-# THIS COULD USE A BETTER ERROR HANDLING MESSAGE,
-# READ INTO WHAT HTTP_400_BAD_REQUEST SENDS BACK
 
 
 def get_crypto_symbols(request):
@@ -54,8 +35,6 @@ class CryptoAssetListView(ListAPIView):
     serializer_class = CryptoAssetSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # WILL IT BE NECESSARY TO INCLUDE A TRY EXCEPT BLOCK TO HANDLE
-    # ERRORS HERE, AND FOR ANY OTHER POST AND GET ROUTES
     def get(self, request):
         queryset = CryptoAsset.objects.filter(user=request.user.id)
         crypto_asset_list = []

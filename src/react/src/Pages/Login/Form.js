@@ -7,22 +7,15 @@ import { Field, reduxForm } from 'redux-form'
 import Input from '../../SharedComponents/FormComponents/input'
 import Header from '../../SharedComponents/FormComponents/header'
 import SubmitButton from '../../SharedComponents/submitButton'
-// import validateEmails from '../../utils/validateEmail'
-
-// import ErrorBoundary from '../ErrorBoundary'
-
-
-
-// STILL NEED TO DISPLAY ERROR MESSAGE IF SOMETHING GOES WRONG WHEN USER ATTEMPTS TO LOGIN
 
 
 const CenteredForm = styled.form`
   display: flex;
   flex-direction: column;
-  justify-content: evenly-space;
+  justify-content: space-between;
   align-items: center;
   font-family: 'Quattrocento', serif;
-  width: 20rem;
+  width: 18rem;
   height: 20rem;
   color: #c21500;
   background: #c21500;  /* fallback for old browsers */
@@ -32,6 +25,10 @@ const CenteredForm = styled.form`
   border-top-right-radius: 25px;
   box-shadow: 2px 2px 4px #aaa;
 
+  @media (min-width: 742px) {
+    width: 22rem;
+  }
+  
   @media (min-width: 900px) {
     width: 24rem;
   }
@@ -43,6 +40,11 @@ const SuccessDiv = styled.div`
   margin: auto;
   font-size: 2rem;
   color: #274156;
+`
+
+const AuthenticationError = styled.p`
+  color: #1c1c1c;
+  font-size: 1.2rem;
 `
 
 const FIELDS = [
@@ -67,16 +69,21 @@ class Form extends Component {
   }
   
   render() {
-    const { error, handleSubmit, submitSucceeded } = this.props
+    const { 
+      error, 
+      handleSubmit, 
+      submitSucceeded, 
+      userAuthenticated, 
+      isAuthenticating, 
+      authenticationError,
+      loginUser
+    } = this.props
     
     const onSubmit = values => {
-      this.props.loginUser(values)
+      loginUser(values)
     }
 
-    console.log("USER AUTHENTICATED")
-    console.log(this.props.userAuthenticated)
-
-    if(this.props.userAuthenticated) {
+    if(userAuthenticated) {
       return (
         <Redirect to='/portfolio/update'/>
       )
@@ -84,36 +91,29 @@ class Form extends Component {
 
     else {
       return(
-        // <ContainerDiv>
           <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
             { error && <strong>{ error }</strong> }
             <Header>Log In</Header>
             { this.renderFields() }
-            <SubmitButton isDisabled={ this.props.isAuthenticating } type="submit">Submit</SubmitButton>
-            { this.props.authenticationError ? <h1>{ this.props.authenticationError }</h1> : null }
+            <SubmitButton isDisabled={ isAuthenticating } type="submit">Submit</SubmitButton>
+            { authenticationError ? <AuthenticationError>{ authenticationError }</AuthenticationError> : null }
           </CenteredForm>
-        // </ContainerDiv>
       )
     }
   }
 }
 
-// function validate(values) {
-//   const errors = {}
+function validate(values) {
+  const errors = {}
 
-//   errors.email = validateEmails(values.email || '')
-
-//   if(!values.name || values.name.length < 3) {
-//     errors.name = 'Enter your Name'
-//   }
-//   if(!values.email) {
-//     errors.email = 'Enter your Email Address'
-//   }
-//   if(!values.projectInfo) {
-//     errors.projectInfo = 'Please provide some information about your project'
-//   }
-//   return errors
-// }
+  if(!values.username || values.username.length < 3) {
+    errors.username = 'Enter your Username'
+  }
+  if(!values.password) {
+    errors.password = 'Enter your Password'
+  }
+  return errors
+}
 
 
 function mapStateToProps({ authentication }) {
@@ -125,6 +125,7 @@ function mapStateToProps({ authentication }) {
 }
 
 export default reduxForm({
+  validate,
   form: 'LoginForm'
 })(
   connect(mapStateToProps, { loginUser })(Form)

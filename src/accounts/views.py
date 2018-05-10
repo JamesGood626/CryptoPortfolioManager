@@ -80,7 +80,10 @@ class UserCreateAPIView(CreateAPIView):
             # # to the client side app.
 
             if not serializer.is_valid():
-                return Response("There seems to have been an error.")
+                # Need to determine what happens between serializer
+                # ValidationError being raised and this line
+                content = {'message': 'Email taken.'}
+                return Response(content, status=HTTP_404_NOT_FOUND)
             serializer.save()
             # Successfully reverses URL, however no redirect occurs...
             content = {'message': 'User successfully created.'}
