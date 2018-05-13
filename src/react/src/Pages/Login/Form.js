@@ -85,7 +85,7 @@ class Form extends Component {
 
     if(userAuthenticated) {
       return (
-        <Redirect to='/portfolio/update'/>
+        <Redirect to='/portfolio/performance'/>
       )
     }
 

@@ -220,31 +220,34 @@ class PortfolioPerformance extends Component {
       'visibility': 'hidden'
     }
 
-    return (
-      <ContainerDiv>
-        <ChartTypeDiv>
-          <PieChartButton style={ showPieChart ? selectedStyle : null } onClick={ !showPieChart && this.toggleCharts }>Quantity</PieChartButton>
-          <BarChartButton style={ showBarChart ? selectedStyle : null } onClick={ !showBarChart && this.toggleCharts }>Percentage P/L</BarChartButton>
-        </ChartTypeDiv>
-         { (pieChartData && showPieChart)
-          ? <PieChart pieChartData={ pieChartData }/>
-          : null
-        } 
-        { (barChartData && showBarChart)
-          ? <BarChart barChartData={ barChartData }/>
-          : null
-        }
-        { coinMarketApiDataList
-          ?
-          <PortfolioTable 
-            titles={ cryptoAssetTitles && cryptoAssetTitles } 
-            cryptoAssetList={ coinMarketApiDataList.length > 0 && coinMarketApiDataList } 
-          />
-          :
-          null
-        }
-      </ContainerDiv>
-    )
+    if ((pieChartData && pieChartData.length !== 0) || (barChartData && barChartData.length !== 0)) {
+      return (
+        <ContainerDiv>
+          <ChartTypeDiv>
+            <PieChartButton style={ showPieChart ? selectedStyle : null } onClick={ !showPieChart && this.toggleCharts }>Quantity</PieChartButton>
+            <BarChartButton style={ showBarChart ? selectedStyle : null } onClick={ !showBarChart && this.toggleCharts }>Percentage P/L</BarChartButton>
+          </ChartTypeDiv>
+            { (pieChartData && showPieChart)
+            ? <PieChart pieChartData={ pieChartData }/>
+            : null
+          } 
+          { (barChartData && showBarChart)
+            ? <BarChart barChartData={ barChartData }/>
+            : null
+          }
+          { coinMarketApiDataList
+            ?
+            <PortfolioTable 
+              titles={ cryptoAssetTitles && cryptoAssetTitles } 
+              cryptoAssetList={ coinMarketApiDataList.length > 0 && coinMarketApiDataList } 
+            />
+            :
+            null
+          }
+        </ContainerDiv>
+      )
+    }
+    return null
   }
 }
 

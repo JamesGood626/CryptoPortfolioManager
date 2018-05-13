@@ -58,7 +58,7 @@ const menuItems = ({ location, menuItems }) => {
             return (
               <Link key={ menuItem.name } style={{ 'textDecoration': 'none' }} to={ menuItem.path }>
                 <Span style={ (menuItem.path === location.pathname) ? activeLink : null }>
-                  { <menuItem.icon active={menuItem.path === location.pathname ? true : false}/> }{ menuItem.name }
+                  { <menuItem.icon/> }{ menuItem.name }
                 </Span>
               </Link>
             ) 

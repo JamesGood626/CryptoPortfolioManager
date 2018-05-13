@@ -4,20 +4,20 @@ import * as d3 from 'd3'
 class BarChart extends Component {
   componentDidMount = () => {
     const { barChartData } = this.props
-    if(barChartData) {
+    if(barChartData && barChartData.length !== 0) {
       const svgDimensions = this.returnSvgDimensions()
       this.doD3Stuff(svgDimensions, svgDimensions/2.2, barChartData)
       window.addEventListener('resize', this.handleResize)
     }
   }
 
-  componentDidUnmount = () => {
+  componentWillUnmount = () => {
     window.removeEventListener('resize', this.handleResize)
   }
 
   handleResize = e => {
-    let newWidth = this.returnSvgDimensions()
-    this.doD3Stuff(newWidth, newWidth/2.2, this.props.barChartData)
+    let newDimensions = this.returnSvgDimensions()
+    this.doD3Stuff(newDimensions, newDimensions/2.2, this.props.barChartData)
   }
 
   returnSvgDimensions = () => {
@@ -68,22 +68,6 @@ class BarChart extends Component {
     const xAxis = d3.axisBottom(x)
     const yAxis = d3.axisLeft(y)
       
-
-    // g.append("g")
-    //     .attr("class", "axis axis--x")
-    //     .attr("transform", "translate(0," + height + ")")
-    //     .call(xAxis)
-
-    // g.append("g")
-    //     .attr("class", "axis axis--y")
-    //     .call(yAxis)
-    //   .append("text")
-    //     .attr("transform", "rotate(-90)")
-    //     .attr("y", 6)
-    //     .attr("dy", "0.71em")
-    //     .attr("text-anchor", "end")
-    //     .text("Frequency")
-
     // All of this .attr code positioned the bars correctly on the graph
     g.selectAll(".bar")
       .data(data)
@@ -99,15 +83,15 @@ class BarChart extends Component {
       .on("mouseover", function(d) {
         div.transition()
           .duration(200)
-          .style("opacity", 1.0);
-        div.html("Yo Brah") //*************** Put in the relevant stuffs ************/
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px")
+          .style("opacity", 1.0)
+        div.html(`Percentage P/L: ${d.number}`)
+        .style("left", (d3.event.pageX - 250) + "px")
+        .style("top", (d3.event.pageY) + "px")
       })
       .on("mouseout", function(d) {
         div.transition()
           .duration(500)
-          .style("opacity", 0);
+          .style("opacity", 0)
       });
 
     svg.append("g")

@@ -22,10 +22,9 @@ import {
   GET_CRYPTO_ASSET_LIST,
   GET_COIN_MARKET_API_DATA
 } from './types'
-import { 
-  CURRENCY_CONVERSION_APP_ID,
-  COIN_API_KEY
-} from './devVenv'
+// import {
+//   COIN_API_KEY
+// } from './devVenv'
 
 const REGISTER_USER_URL = 'http://127.0.0.1:8000/users/api/register/'
 const LOGIN_USER_URL = 'http://127.0.0.1:8000/users/login/'
@@ -80,8 +79,12 @@ export const loginUser = values => async dispatch => {
     dispatch({ type: AUTHENTICATE_USER, payload: true })
   }
   catch (err) {
-    if(err.response.data) {
+    if(err.message === "Request failed with status code 404") {
       dispatch({ type: AUTHENTICATION_ERROR, payload: err.response.data.message })
+      return
+    }
+    else if(err.message === "Network error") {
+      dispatch({ type: AUTHENTICATION_ERROR, payload: err.message })
       return
     }
     dispatch({ type: AUTHENTICATION_ERROR, payload: err.message })
@@ -98,17 +101,12 @@ export const getSymbolList = (values) => async dispatch => {
                             symbolArr.push(symbol.symbol)
                             return symbolArr
 			                    }, [])
-
   dispatch({ type: GET_SYMBOL_LIST, payload: refinedSymbolList })
 }
 
 export const getHistoricalRate = values => async dispatch => {
-  console.log("GET THEM HISTORICAL RATES")
-  console.log(values)
   const historicalOrderRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}${values.baseCurrency}/${values.quoteCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
   const historicalRateUSDConversion = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.quoteCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
-  console.log("THIS IS HISTORICAL ORDER RATE DATA")
-  console.log(historicalOrderRateData)
   const ratioDifference = historicalRateConversion.getRatioDifference(historicalOrderRateData.data.rate, values.price)
   const trueUSDHistoricalRate = historicalRateConversion.getTrueHistoricalRate(ratioDifference, historicalRateUSDConversion.data.rate)
 
@@ -154,7 +152,7 @@ export const getHistoricalRate = values => async dispatch => {
 }
 
 export const getBitcoinHistoricalRate = values => async dispatch => {
-  const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+  const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${process.env ? process.env.COIN_API_KEY : COIN_API_KEY}`)
   
   const feeBTC = bitcoinHistoricalRateUSDConversion.getFeeBTC(historicalBitcoinRateData.data.rate, values.fee)
   const priceBTC = bitcoinHistoricalRateUSDConversion.getPriceBTC(historicalBitcoinRateData.data.rate, values.price)
@@ -175,8 +173,6 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
   createOrderDict.exchange_fee_btc = parseFloat(feeBTC).toFixed(6)
   createOrderDict.exchange_fee_fiat = parseFloat(values.fee).toFixed(2)
 
-  console.log('THE CREATE ORDER DICT')
-  console.log(createOrderDict)
   dispatch(addNewCrypto(createOrderDict))
 }
 
@@ -191,7 +187,7 @@ export const addNewCrypto = values => async dispatch => {
           console.log(response)
         })
         .catch(function (error) {
-          console.log(error);
+          console.log(error)
         })
     }
     else if(values['sellOrder']) {
@@ -200,7 +196,7 @@ export const addNewCrypto = values => async dispatch => {
           console.log(response)
         })
         .catch(function (error) {
-          console.log(error);
+          console.log(error)
         })
     }
   }
@@ -245,7 +241,6 @@ export const getUserSettingsList = (values) => async dispatch => {
 }
 
 export const getProfitLossTransactionList = (values) => async dispatch => {
-  console.log("GET PROFIT LOSS TRANSACTION LIST RUNNING")
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(PROFIT_LOSS_TRANSACTION_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
@@ -259,7 +254,6 @@ export const getProfitLossTransactionList = (values) => async dispatch => {
 }
 
 export const getCryptoAssetList = (values) => async dispatch => {
-  console.log("GET CRYPTO ASSET LIST RUNNING")
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(CRYPTO_ASSET_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })

@@ -41,39 +41,42 @@ const Td = styled.td`
 `
 
 const portfolioTable = ({ titles, cryptoAssetList }) => {
-  const titleKeys = Object.getOwnPropertyNames(cryptoAssetList[0])
-  return (
-    <TableDiv>
-      <Table>
-        <thead>
-          <Tr>
-             { titles ?
-             titles.map(title => {
-                return (
-                  <Th>{ title }</Th>
+  if(cryptoAssetList && cryptoAssetList.length > 0) {
+    const titleKeys = Object.getOwnPropertyNames(cryptoAssetList[0])
+    return (
+      <TableDiv>
+        <Table>
+          <thead>
+            <Tr>
+              { titles ?
+              titles.map(title => {
+                  return (
+                    <Th>{ title }</Th>
+                  )
+                }) : null
+              } 
+            </Tr>
+          </thead>
+          <tbody>
+              { cryptoAssetList ?
+              cryptoAssetList.map(cryptoAsset => {
+                return ( 
+                  <Tr>
+                    { 
+                      titleKeys.map(property => { 
+                        return <Td>{ cryptoAsset[property] }</Td> 
+                      }) 
+                    }
+                  </Tr>
                 )
               }) : null
-            } 
-          </Tr>
-        </thead>
-        <tbody>
-            { cryptoAssetList ?
-             cryptoAssetList.map(cryptoAsset => {
-              return ( 
-                <Tr>
-                  { 
-                    titleKeys.map(property => { 
-                      return <Td>{ cryptoAsset[property] }</Td> 
-                    }) 
-                  }
-                </Tr>
-              )
-            }) : null
-            }
-        </tbody>
-      </Table>
-    </TableDiv>
-  )
+              }
+          </tbody>
+        </Table>
+      </TableDiv>
+    ) 
+  }
+  return <div></div>
 }
 
 export default portfolioTable
