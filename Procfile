@@ -1,1 +1,1 @@
-web: gunicorn django_crypto.wsgi --log-file -
+web: gunicorn django_crypto:app --log-file -
