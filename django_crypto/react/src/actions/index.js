@@ -28,19 +28,20 @@ import {
 
 // axios.defaults.xsrfCookieName = 'csrftoken'
 // axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-
-const REGISTER_USER_URL = 'https://crypto-portfolio-manager.herokuapp.com/users/api/register/'
-const LOGIN_USER_URL = 'http://127.0.0.1:8000/users/login/'
-const GET_JWT_URL = 'http://127.0.0.1:8000/users/api/token/auth/'
-const SYMBOL_LIST_URL = 'http://127.0.0.1:8000/api/portfolio/crypto-symbol/list/'
-const ADD_NEW_BUY_ORDER_URL = 'http://127.0.0.1:8000/api/transactions/buy-order/create/'
-const ADD_NEW_SELL_ORDER_URL = 'http://127.0.0.1:8000/api/transactions/sell-order/create/'
-const BUY_ORDER_LIST_URL = 'http://127.0.0.1:8000/api/transactions/buy-order/list/'
-const SELL_ORDER_LIST_URL = 'http://127.0.0.1:8000/api/transactions/sell-order/list/'
-const FIAT_OPTION_LIST_URL = 'http://127.0.0.1:8000/api/settings/fiat-options/list/'
-const USER_SETTINGS_LIST_URL = 'http://127.0.0.1:8000/api/settings/user-settings/list/'
-const PROFIT_LOSS_TRANSACTION_LIST_URL = 'http://127.0.0.1:8000/api/transactions/profit-loss-transaction/list/'
-const CRYPTO_ASSET_LIST_URL = 'http://127.0.0.1:8000/api/portfolio/crypto-asset/list/'
+const DEV_API = 'http://127.0.0.1:8000'
+const PROD_API = 'https://crypto-portfolio-manager.herokuapp.com'
+const REGISTER_USER_URL = `${process.env ? PROD_API : DEV_API }/users/api/register/`
+const LOGIN_USER_URL = `${process.env ? PROD_API : DEV_API }/users/login/`
+const GET_JWT_URL = `${process.env ? PROD_API : DEV_API }/users/api/token/auth/`
+const SYMBOL_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/portfolio/crypto-symbol/list/`
+const ADD_NEW_BUY_ORDER_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/buy-order/create/`
+const ADD_NEW_SELL_ORDER_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/sell-order/create/`
+const BUY_ORDER_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/buy-order/list/`
+const SELL_ORDER_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/sell-order/list/`
+const FIAT_OPTION_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/settings/fiat-options/list/`
+const USER_SETTINGS_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/settings/user-settings/list/`
+const PROFIT_LOSS_TRANSACTION_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/profit-loss-transaction/list/`
+const CRYPTO_ASSET_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/portfolio/crypto-asset/list/`
 
 // UPDATE URLS
 const UPDATE_USER_FIAT_OPTION_URL = 'http://127.0.0.1:8000/api/settings/user-settings/update/'
@@ -69,6 +70,7 @@ function getCookie(cname) {
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
   var csrftoken = getCookie('csrftoken')
+  console.log(csrftoken)
   const userInfo = {
     username: values["username"],
     password: values["password"],
