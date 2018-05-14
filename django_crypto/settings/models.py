@@ -31,8 +31,8 @@ class UserSettings(Model):
         verbose_name_plural = "user settings"
 
 
-@receiver(post_save, sender=User)
-def my_handler(sender, instance, *args, **kwargs):
-    fiat_option = FiatOption.objects.get(abbreviated_currency='USD')
-    user_settings = UserSettings.objects.create(user=instance, fiat_option=fiat_option)
-    user_settings.save()
+# @receiver(post_save, sender=User)
+# def my_handler(sender, instance, *args, **kwargs):
+#     fiat_option = FiatOption.objects.get(abbreviated_currency='USD')
+#     user_settings = UserSettings.objects.create(user=instance, fiat_option=fiat_option)
+#     user_settings.save()
