@@ -79,6 +79,7 @@ class UserCreateAPIView(CreateAPIView):
             content = {'message': 'That username is already taken.'}
             return Response(content, status=HTTP_404_NOT_FOUND)
         else:
+            print("SERIALIZER IS VALID AND CREATING USER")
             serializer = UserCreateSerializer(data=request.data)
             # Will need to ensure I handle error cases appropriately to send back
             # # to the client side app.

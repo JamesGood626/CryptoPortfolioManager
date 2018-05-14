@@ -71,6 +71,7 @@ class UserCreateSerializer(ModelSerializer):
         )
         user.set_password(password)
         user.save()
+        print("USER SAVED")
         payload = jwt_payload_handler(user)
         token = jwt_encode_handler(payload)
         return token

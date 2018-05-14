@@ -87,7 +87,10 @@ export const registerUser = values => async dispatch => {
 
   try {
     const response = await axios.post(`${REGISTER_USER_URL}`, userInfo)
+    console.log("HERE IS THE RESPONSE BEFORE 201 IF STATEMENT")
+    console.log(response)
     if (response.status === 201) {
+      console.log("RESPONSE 201 DISPATCHING REGISTER_USER")
       dispatch({ type: REGISTER_USER, payload: true })
     }
   }
