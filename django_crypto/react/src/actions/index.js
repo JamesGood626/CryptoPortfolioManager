@@ -1,4 +1,5 @@
 import axios from 'axios'
+import cookies from 'cookies'
 import { SubmissionError } from 'redux-form'
 import transformProfitLossTransactionList from '../Utils/transformProfitLossTransactionList'
 import extractCrypto from '../Utils/extractCrypto'
@@ -26,8 +27,8 @@ import {
   COIN_API_KEY
 } from './devVenv'
 
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+// axios.defaults.xsrfCookieName = 'csrftoken'
+// axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 const REGISTER_USER_URL = 'https://crypto-portfolio-manager.herokuapp.com/users/api/register/'
 const LOGIN_USER_URL = 'http://127.0.0.1:8000/users/login/'
@@ -53,6 +54,7 @@ const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' 
 
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
+  var csrftoken = cookies.get('csrftoken')
   const userInfo = {
     username: values["username"],
     password: values["password"],
@@ -61,7 +63,11 @@ export const registerUser = values => async dispatch => {
   }
 
   try {
-    const response = await axios.post(`${REGISTER_USER_URL}`, userInfo)
+    const response = await axios.post(
+                             `${REGISTER_USER_URL}`, 
+                             userInfo, 
+                             { headers: {'X-CSRFToken': csrftoken} }
+                           )
     if (response.status === 201) {
       dispatch({ type: REGISTER_USER, payload: true })
     }
