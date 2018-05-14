@@ -5,12 +5,12 @@
   "proxy": "http://localhost:8000",
   "dependencies": {
     "axios": "^0.17.1",
-    "cookies": "^0.7.1",
     "d3": "^5.1.0",
     "downshift": "^1.31.6",
     "gsap": "^1.20.3",
     "normalize.css": "^7.0.0",
     "react": "^16.2.0",
+    "react-cookie": "^2.1.4",
     "react-dom": "^16.2.0",
     "react-media": "^1.8.0",
     "react-redux": "^5.0.6",
