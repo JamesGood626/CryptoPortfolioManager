@@ -1,5 +1,5 @@
 import axios from 'axios'
-import cookie from 'react-cookie'
+import { Cookies } from 'react-cookie'
 import { SubmissionError } from 'redux-form'
 import transformProfitLossTransactionList from '../Utils/transformProfitLossTransactionList'
 import extractCrypto from '../Utils/extractCrypto'
@@ -54,7 +54,7 @@ const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' 
 
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
-  var csrftoken = cookie.get('csrftoken')
+  var csrftoken = Cookies.get('csrftoken')
   const userInfo = {
     username: values["username"],
     password: values["password"],
