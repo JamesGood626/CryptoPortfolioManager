@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { Cookies } from 'react-cookie'
 import { SubmissionError } from 'redux-form'
 import transformProfitLossTransactionList from '../Utils/transformProfitLossTransactionList'
 import extractCrypto from '../Utils/extractCrypto'
@@ -51,10 +50,25 @@ const CURRENCY_CONVERSION_API_BASE_URL = 'https://openexchangerates.org/api/late
 const CRYPTO_PERFORMANCE_API_BASE_URL = 'https://api.coinmarketcap.com/v1/ticker/'
 const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' // + {asset_id_base}/{asset_id_quote}?time={time}
 
+function getCookie(cname) {
+    var name = cname + "="
+    var decodedCookie = decodeURIComponent(document.cookie)
+    var ca = decodedCookie.split(';')
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i]
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1)
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length)
+        }
+    }
+    return ""
+}
 
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
-  var csrftoken = Cookies.get('csrftoken')
+  var csrftoken = getCookie('csrftoken')
   const userInfo = {
     username: values["username"],
     password: values["password"],
