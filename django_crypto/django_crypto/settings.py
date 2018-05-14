@@ -60,7 +60,8 @@ CORS_ORIGIN_WHITELIST = (
     # 'http://localhost:8000',
 )
 
-CSRF_COOKIE_NAME = "XSRF-TOKEN"
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_HEADER_NAME = 'X-CSRFToken'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

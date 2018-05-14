@@ -26,7 +26,8 @@ import {
   COIN_API_KEY
 } from './devVenv'
 
-axios.defaults.xsrfHeaderName = "X-CSRFToken"
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 const REGISTER_USER_URL = 'https://crypto-portfolio-manager.herokuapp.com/users/api/register/'
 const LOGIN_USER_URL = 'http://127.0.0.1:8000/users/login/'
