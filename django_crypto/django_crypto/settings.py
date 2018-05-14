@@ -60,6 +60,8 @@ CORS_ORIGIN_WHITELIST = (
     # 'http://localhost:8000',
 )
 
+CSRF_COOKIE_NAME = "XSRF-TOKEN"
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
