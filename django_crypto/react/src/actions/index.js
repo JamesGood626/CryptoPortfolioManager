@@ -70,7 +70,6 @@ function getCookie(cname) {
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
   var csrftoken = getCookie('csrftoken')
-  console.log(csrftoken)
   const userInfo = {
     username: values["username"],
     password: values["password"],
