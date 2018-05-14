@@ -54,8 +54,9 @@ INSTALLED_APPS = [
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
+    'crypto-portfolio-manager.herokuapp.com'
     # 'localhost:3000',
-    '127.0.0.1'
+    # '127.0.0.1'
     # 'http://localhost:8000',
 )
 
