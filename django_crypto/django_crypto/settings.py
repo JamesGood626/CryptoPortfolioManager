@@ -60,8 +60,8 @@ CORS_ORIGIN_ALLOW_ALL = False
 #     # 'http://localhost:8000',
 # )
 
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_HEADER_NAME = 'X-CSRFToken'
+# CSRF_COOKIE_NAME = 'csrftoken'
+# CSRF_HEADER_NAME = 'X-CSRFToken'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
