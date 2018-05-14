@@ -22,11 +22,11 @@ import {
   GET_CRYPTO_ASSET_LIST,
   GET_COIN_MARKET_API_DATA
 } from './types'
-// import {
-//   COIN_API_KEY
-// } from './devVenv'
+import {
+  COIN_API_KEY
+} from './devVenv'
 
-const REGISTER_USER_URL = 'http://127.0.0.1:8000/users/api/register/'
+const REGISTER_USER_URL = 'https://crypto-portfolio-manager.herokuapp.com/users/api/register/'
 const LOGIN_USER_URL = 'http://127.0.0.1:8000/users/login/'
 const GET_JWT_URL = 'http://127.0.0.1:8000/users/api/token/auth/'
 const SYMBOL_LIST_URL = 'http://127.0.0.1:8000/api/portfolio/crypto-symbol/list/'
@@ -105,8 +105,8 @@ export const getSymbolList = (values) => async dispatch => {
 }
 
 export const getHistoricalRate = values => async dispatch => {
-  const historicalOrderRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}${values.baseCurrency}/${values.quoteCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
-  const historicalRateUSDConversion = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.quoteCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+  const historicalOrderRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}${values.baseCurrency}/${values.quoteCurrency}?time=${values.dateTime}&apikey=${process.env ? process.env.COIN_API_KEY : COIN_API_KEY}`)
+  const historicalRateUSDConversion = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.quoteCurrency}?time=${values.dateTime}&apikey=${process.env ? process.env.COIN_API_KEY : COIN_API_KEY}`)
   const ratioDifference = historicalRateConversion.getRatioDifference(historicalOrderRateData.data.rate, values.price)
   const trueUSDHistoricalRate = historicalRateConversion.getTrueHistoricalRate(ratioDifference, historicalRateUSDConversion.data.rate)
 
