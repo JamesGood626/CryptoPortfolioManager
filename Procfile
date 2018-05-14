@@ -1,1 +1,1 @@
-web: gunicorn django_crypto.wsgi:django_crypto --log-file -
+web: sh -c 'cd ./django_crypto/ && exec gunicorn django_crypto.wsgi --log-file -'
