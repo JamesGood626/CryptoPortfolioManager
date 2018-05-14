@@ -53,12 +53,12 @@ INSTALLED_APPS = [
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = (
-    'crypto-portfolio-manager.herokuapp.com'
-    # 'localhost:3000',
-    # '127.0.0.1'
-    # 'http://localhost:8000',
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'crypto-portfolio-manager.herokuapp.com'
+#     # 'localhost:3000',
+#     # '127.0.0.1'
+#     # 'http://localhost:8000',
+# )
 
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_HEADER_NAME = 'X-CSRFToken'
