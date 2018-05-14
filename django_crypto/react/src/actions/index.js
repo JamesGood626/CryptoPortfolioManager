@@ -77,7 +77,7 @@ const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' 
 
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
-  var csrftoken = Cookies.get('csrftoken')
+  // var csrftoken = Cookies.get('csrftoken')
   const userInfo = {
     username: values["username"],
     password: values["password"],
