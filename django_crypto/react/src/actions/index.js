@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import { SubmissionError } from 'redux-form'
 import transformProfitLossTransactionList from '../Utils/transformProfitLossTransactionList'
 import extractCrypto from '../Utils/extractCrypto'
@@ -69,6 +69,12 @@ const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' 
 //     return ""
 // }
 
+// const response = await axios.post(
+//                              `${REGISTER_USER_URL}`, 
+//                              userInfo, 
+//                              { headers: {'X-CSRFToken': csrftoken} }
+//                            )
+
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
   var csrftoken = Cookies.get('csrftoken')
@@ -80,11 +86,7 @@ export const registerUser = values => async dispatch => {
   }
 
   try {
-    const response = await axios.post(
-                             `${REGISTER_USER_URL}`, 
-                             userInfo, 
-                             { headers: {'X-CSRFToken': csrftoken} }
-                           )
+    const response = await axios.post(`${REGISTER_USER_URL}`, userInfo)
     if (response.status === 201) {
       dispatch({ type: REGISTER_USER, payload: true })
     }
