@@ -1,27 +1,18 @@
-from django.shortcuts import render, redirect, reverse
-from django.db.models import Q
-
 from decimal import Decimal
 
 from rest_framework.response import Response
+from rest_framework import permissions
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+)
 from rest_framework.status import (
-    HTTP_201_CREATED
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST
 )
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from rest_framework.views import APIView
-from rest_framework.generics import (
-    CreateAPIView,
-    DestroyAPIView,
-    ListAPIView,
-    UpdateAPIView,
-    RetrieveAPIView,
-    RetrieveUpdateAPIView,
-    GenericAPIView,
-)
-
-from rest_framework import permissions
 
 from .models import (
     BuyOrder,
@@ -57,11 +48,11 @@ class BuyOrderCreateAPIView(CreateAPIView):
         }
         serializer = BuyOrderCreateSerializer(data=buy_order_data)
         if not serializer.is_valid():
-            # print(serializer.errors)
             content = "An error occurred"
-            return Response(content, status="HTTP_400_BAD_REQUEST")
+            return Response(content, status=HTTP_400_BAD_REQUEST)
         serializer.save()
-        return redirect('/login')
+        content = "Buy Order was successful."
+        return Response(content, status=HTTP_201_CREATED)
 
 
 class SellOrderCreateAPIView(CreateAPIView):
@@ -74,10 +65,6 @@ class SellOrderCreateAPIView(CreateAPIView):
             user=request.user.id,
             ticker=request.data['ticker'],
         )
-        print('CryptoAsset count in SellOrderCreateAPIView POST')
-        print(qs.count())
-        print('THIS IS THE FIRST QS ITEM')
-        print(qs[0].quantity)
         if qs.count() == 1 and (qs[0].quantity - Decimal(request.data['quantity'])) >= 0:
             sell_order_data = {
                 'user': request.user.id,

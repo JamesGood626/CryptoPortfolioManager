@@ -1,24 +1,11 @@
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_400_BAD_REQUEST,
-    HTTP_404_NOT_FOUND
-)
-
 from rest_framework_jwt.settings import api_settings
-from rest_framework import serializers
 from rest_framework.serializers import (
-    CharField,
-    EmailField,
-    HyperlinkedIdentityField,
     ModelSerializer,
-    SerializerMethodField,
-    ValidationError
+    CharField,
+    ValidationError,
 )
 
 User = get_user_model()

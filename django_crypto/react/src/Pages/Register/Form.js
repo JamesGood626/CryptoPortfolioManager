@@ -16,7 +16,7 @@ const CenteredForm = styled.form`
   justify-content: space-between;
   align-items: center;
   font-family: 'Quattrocento', serif;
-  width: 20rem;
+  width: 18rem;
   height: 25rem;
   color: #fcfafa;
   background: #c21500;  /* fallback for old browsers */
@@ -26,7 +26,11 @@ const CenteredForm = styled.form`
   border-top-right-radius: 25px;
   box-shadow: 2px 2px 4px #aaa;
 
-  @media (min-width: 900px) {
+  @media (min-width: 742px) {
+    width: 22rem;
+  }
+
+  @media (min-width: 1024px) {
     width: 24rem;
   }
 `
@@ -65,16 +69,6 @@ class Form extends Component {
           />
       )
     })
-  }
-
-  componentDidMount() {
-    const { userRegistered, isRegistering, registrationError } = this.props
-    console.log("userRegistered")
-    console.log(userRegistered)
-    console.log("isRegistering")
-    console.log(isRegistering)
-    console.log("registrationError")
-    console.log(registrationError)
   }
   
   render() {

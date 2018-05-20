@@ -1,5 +1,4 @@
 import axios from 'axios'
-// import Cookies from 'js-cookie'
 import { SubmissionError } from 'redux-form'
 import transformProfitLossTransactionList from '../Utils/transformProfitLossTransactionList'
 import extractCrypto from '../Utils/extractCrypto'
@@ -12,7 +11,9 @@ import {
   IS_REGISTERING,
   REGISTER_USER,
   REGISTRATION_ERROR,
-  ADD_NEW_CRYPTO,
+  SUBMIT_IN_PROGRESS,
+  ADD_NEW_CRYPTO_SUCCESS,
+  ADD_NEW_CRYPTO_ERR,
   GET_SYMBOL_LIST, 
   GET_BUY_ORDER_LIST, 
   GET_SELL_ORDER_LIST,
@@ -27,23 +28,20 @@ import {
   COIN_API_KEY
 } from './devVenv'
 
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-
 const DEV_API = 'http://127.0.0.1:8000'
 const PROD_API = 'https://crypto-portfolio-manager.herokuapp.com'
-const REGISTER_USER_URL = `${process.env ? PROD_API : DEV_API }/users/api/register/`
-const LOGIN_USER_URL = `${process.env ? PROD_API : DEV_API }/users/login/`
-const GET_JWT_URL = `${process.env ? PROD_API : DEV_API }/users/api/token/auth/`
-const SYMBOL_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/portfolio/crypto-symbol/list/`
-const ADD_NEW_BUY_ORDER_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/buy-order/create/`
-const ADD_NEW_SELL_ORDER_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/sell-order/create/`
-const BUY_ORDER_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/buy-order/list/`
-const SELL_ORDER_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/sell-order/list/`
-const FIAT_OPTION_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/settings/fiat-options/list/`
-const USER_SETTINGS_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/settings/user-settings/list/`
-const PROFIT_LOSS_TRANSACTION_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/transactions/profit-loss-transaction/list/`
-const CRYPTO_ASSET_LIST_URL = `${process.env ? PROD_API : DEV_API }/api/portfolio/crypto-asset/list/`
+const REGISTER_USER_URL = `${ DEV_API }/users/api/register/`
+const LOGIN_USER_URL = `${  DEV_API }/users/login/`
+const GET_JWT_URL = `${ DEV_API }/users/api/token/auth/`
+const SYMBOL_LIST_URL = `${ DEV_API }/api/portfolio/crypto-symbol/list/`
+const ADD_NEW_BUY_ORDER_URL = `${ DEV_API }/api/transactions/buy-order/create/`
+const ADD_NEW_SELL_ORDER_URL = `${  DEV_API }/api/transactions/sell-order/create/`
+const BUY_ORDER_LIST_URL = `${  DEV_API }/api/transactions/buy-order/list/`
+const SELL_ORDER_LIST_URL = `${ DEV_API }/api/transactions/sell-order/list/`
+const FIAT_OPTION_LIST_URL = `${  DEV_API }/api/settings/fiat-options/list/`
+const USER_SETTINGS_LIST_URL = `${  DEV_API }/api/settings/user-settings/list/`
+const PROFIT_LOSS_TRANSACTION_LIST_URL = `${  DEV_API }/api/transactions/profit-loss-transaction/list/`
+const CRYPTO_ASSET_LIST_URL = `${ DEV_API }/api/portfolio/crypto-asset/list/`
 
 // UPDATE URLS
 const UPDATE_USER_FIAT_OPTION_URL = 'http://127.0.0.1:8000/api/settings/user-settings/update/'
@@ -53,31 +51,13 @@ const CURRENCY_CONVERSION_API_BASE_URL = 'https://openexchangerates.org/api/late
 const CRYPTO_PERFORMANCE_API_BASE_URL = 'https://api.coinmarketcap.com/v1/ticker/'
 const COIN_API_HISTORICAL_RATE_URL = 'https://rest.coinapi.io/v1/exchangerate/' // + {asset_id_base}/{asset_id_quote}?time={time}
 
-// function getCookie(cname) {
-//     var name = cname + "="
-//     var decodedCookie = decodeURIComponent(document.cookie)
-//     var ca = decodedCookie.split(';')
-//     for(var i = 0; i <ca.length; i++) {
-//         var c = ca[i]
-//         while (c.charAt(0) == ' ') {
-//             c = c.substring(1)
-//         }
-//         if (c.indexOf(name) == 0) {
-//             return c.substring(name.length, c.length)
-//         }
-//     }
-//     return ""
-// }
+// DJANGO CSRF
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
-// const response = await axios.post(
-//                              `${REGISTER_USER_URL}`, 
-//                              userInfo, 
-//                              { headers: {'X-CSRFToken': csrftoken} }
-//                            )
 
 export const registerUser = values => async dispatch => {
   dispatch({ type: IS_REGISTERING })
-  // var csrftoken = Cookies.get('csrftoken')
   const userInfo = {
     username: values["username"],
     password: values["password"],
@@ -87,10 +67,7 @@ export const registerUser = values => async dispatch => {
 
   try {
     const response = await axios.post(`${REGISTER_USER_URL}`, userInfo)
-    console.log("HERE IS THE RESPONSE BEFORE 201 IF STATEMENT")
-    console.log(response)
     if (response.status === 201) {
-      console.log("RESPONSE 201 DISPATCHING REGISTER_USER")
       dispatch({ type: REGISTER_USER, payload: true })
     }
   }
@@ -136,8 +113,9 @@ export const getSymbolList = (values) => async dispatch => {
 }
 
 export const getHistoricalRate = values => async dispatch => {
-  const historicalOrderRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}${values.baseCurrency}/${values.quoteCurrency}?time=${values.dateTime}&apikey=${process.env ? process.env.COIN_API_KEY : COIN_API_KEY}`)
-  const historicalRateUSDConversion = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.quoteCurrency}?time=${values.dateTime}&apikey=${process.env ? process.env.COIN_API_KEY : COIN_API_KEY}`)
+  dispatch({ type: SUBMIT_IN_PROGRESS, payload: true })
+  const historicalOrderRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}${values.baseCurrency}/${values.quoteCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+  const historicalRateUSDConversion = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.quoteCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
   const ratioDifference = historicalRateConversion.getRatioDifference(historicalOrderRateData.data.rate, values.price)
   const trueUSDHistoricalRate = historicalRateConversion.getTrueHistoricalRate(ratioDifference, historicalRateUSDConversion.data.rate)
 
@@ -183,7 +161,8 @@ export const getHistoricalRate = values => async dispatch => {
 }
 
 export const getBitcoinHistoricalRate = values => async dispatch => {
-  const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${process.env ? process.env.COIN_API_KEY : COIN_API_KEY}`)
+  dispatch({ type: SUBMIT_IN_PROGRESS, payload: true })
+  const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
   
   const feeBTC = bitcoinHistoricalRateUSDConversion.getFeeBTC(historicalBitcoinRateData.data.rate, values.fee)
   const priceBTC = bitcoinHistoricalRateUSDConversion.getPriceBTC(historicalBitcoinRateData.data.rate, values.price)
@@ -215,10 +194,27 @@ export const addNewCrypto = values => async dispatch => {
     if(values['buyOrder']) {
       axios.post(`${ADD_NEW_BUY_ORDER_URL}`, values, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
         .then(function (response) {
-          console.log(response)
+          dispatch({ type: SUBMIT_IN_PROGRESS, payload: false })
+          console.log("the success")
+          dispatch({ type: ADD_NEW_CRYPTO_SUCCESS, payload: true })
+          setTimeout(() => {
+              dispatch({ type: ADD_NEW_CRYPTO_SUCCESS, payload: false })
+            }, 3000
+          )
         })
         .catch(function (error) {
-          console.log(error)
+          dispatch({ type: SUBMIT_IN_PROGRESS, payload: false })
+          console.log("the failure")
+          if(error.response.status === 401) {
+            dispatch(signOutUser())
+          }
+          else {
+            dispatch({ type: ADD_NEW_CRYPTO_ERR, payload: true })
+            setTimeout(() => {
+                dispatch({ type: ADD_NEW_CRYPTO_ERR, payload: false })
+              }, 4000
+            )
+          }
         })
     }
     else if(values['sellOrder']) {

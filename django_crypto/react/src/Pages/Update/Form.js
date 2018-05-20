@@ -6,8 +6,8 @@ import { Field, reduxForm } from 'redux-form'
 
 import Input from '../../SharedComponents/FormComponents/input'
 import SubmitButton from '../../SharedComponents/submitButton'
-import validateDateTime from '../../Utils/validateDateTime'
 
+import validateDateTime from '../../Utils/validateDateTime'
 import ErrorBoundary from '../ErrorBoundary'
 
 
@@ -26,13 +26,13 @@ const CenteredForm = styled.form`
   box-shadow: 2px 2px 4px #aaa;
 
   @media (min-width: 742px) {
-    height: 24rem;
+    height: 23rem;
     width: 22rem;
     margin-bottom: 1rem;
   }
 
-  @media (min-width: 900px) {
-    height: 26rem;
+  @media (min-width: 1024px) {
+    height: 25rem;
     width: 24rem;
     margin-bottom: 1rem;
   }
@@ -114,10 +114,12 @@ class Form extends Component {
       buyOrder,
       sellOrder,
       deposit,
-      withdraw
+      withdraw,
+      addNewCryptoSuccess,
+      addNewCryptoErr
     } = this.props
     
-    const onSubmit = (values) => {
+    const onSubmit = values => {
       // Sets necessary flag so that action creator can issue
       // a POST to the correct DRF api url
       if (buyOrder || sellOrder) {
@@ -144,20 +146,20 @@ class Form extends Component {
       reset()
     }
 
-    return(
+    return (
       <CenteredForm onSubmit={ handleSubmit(onSubmit) }>
-          <datalist id="cryptos">
-            { Array.isArray(symbolList) ? 
-              symbolList.map((symbol, index) => {
-                  return (
-                    <option key={ index } value={ symbol }/>
-                  )
-                }) 
-              : null 
-            }
-          </datalist>
-          { this.props.withdraw || this.props.deposit ? this.renderFields(true) : this.renderFields() }
-          <SubmitButton type="submit">Submit</SubmitButton>
+        <datalist id="cryptos">
+          { Array.isArray(symbolList) ? 
+            symbolList.map((symbol, index) => {
+                return (
+                  <option key={ index } value={ symbol }/>
+                )
+              }) 
+            : null 
+          }
+        </datalist>
+        { this.props.withdraw || this.props.deposit ? this.renderFields(true) : this.renderFields() }
+        <SubmitButton type="submit">Submit</SubmitButton>
       </CenteredForm>
     )
   }

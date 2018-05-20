@@ -21,7 +21,7 @@ const ContainerDiv = styled.div`
     width: 22rem;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     height: 5.5rem;
     width: 24rem;
   }

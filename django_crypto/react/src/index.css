@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  overflow-x: hidden;
+  overflow-x: hidden; 
   border: none;
   width: 100vw;
   height: 100vh;
@@ -25,13 +25,21 @@ body {
   margin: 0;
 }
 
+.chart-text {
+  font-size: 1.4rem;
+}
+ 
 @media (max-width: 748px) {
   .pieChartDimensions {
     width: 100vw;
   }
 
-  .barChartDimensions {
+  .chartDimensions {
     width: 100vw;
+  }
+
+  .chart-text {
+    font-size: 2rem;
   }
 }
 
@@ -43,7 +51,7 @@ body {
   .pieChartDimensions {
     height: 50vh;
   }
-}
+} 
 
 .bar--negative {
   fill: #d40000;
@@ -55,17 +63,23 @@ body {
 
 .tooltip {
   position: absolute;
-  text-align: right;
+  text-align: center;
   width: 8rem;
   height: 4rem;
   padding: 0.4rem;
-  font: 12px sans-serif;
+  font: 1rem sans-serif;
   background: white;
   border: 1px solid lightgray;
   border-radius: 8px;
   pointer-events: none;
   opacity: 0;
 }
+
+.tickRevealContainer {
+  height: 14rem;
+  width: 14rem;
+}
+
 /************************
 currencyDropDown.js Styles 
 *************************/

@@ -16,7 +16,7 @@ const CenteredForm = styled.form`
   align-items: center;
   font-family: 'Quattrocento', serif;
   width: 18rem;
-  height: 20rem;
+  height: 18rem;
   color: #c21500;
   background: #c21500;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
@@ -27,10 +27,12 @@ const CenteredForm = styled.form`
 
   @media (min-width: 742px) {
     width: 22rem;
+    height: 20rem;
   }
   
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     width: 24rem;
+    height: 22rem;
   }
 `
 

@@ -3,15 +3,20 @@
 
 {% block head %}
 {% load static %}
+<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static "css/styles.css" %}" />
 <style>
 .bg {
     position: absolute;
     height: 102vh;
     width: 101vw;
     margin-top: -2px;
-    background: url("{% static "img/svgBg.svg" %}") no-repeat;
-    background-size: cover;
+    background: #c21500;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #FFA900, #c21500);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    font-family: 'Montserrat', sans-serif;
 }
+
 .display {
     position: absolute;
     top: 0;
@@ -30,6 +35,7 @@
     top: 2.2rem;
     left: 2.8rem;
     color: #fffbfc;
+    font-weight: 300;
 }
 
 .buttons {
@@ -59,7 +65,7 @@
     text-decoration: none;
 }
 
-#register {
+#leftLoginBtn {
     width: 4rem;
     height: 2rem;
     margin: 0;
@@ -71,15 +77,15 @@
     box-shadow: 2px 2px 3px #ccc;
 }
 
-#register:hover {
+#leftLoginBtn:hover {
     background: #17CA4A;
 }
 
-#register:focus {
+#leftLoginBtn:focus {
     outline: 0;
 }
 
-#login {
+#rightRegisterBtn {
     width: 4rem;
     height: 2rem;
     margin: 0;
@@ -91,11 +97,11 @@
     box-shadow: 2px 2px 3px #ccc;
 }
 
-#login:hover {
+#rightRegisterBtn:hover {
     background: #17CA4A;
 }
 
-#login:focus {
+#rightRegisterBtn:focus {
     outline: 0;
 }
 
@@ -104,13 +110,13 @@
   .buttons {
       width: 18rem;
   }
-  #register {
+  #leftLoginBtn {
     width: 5.5rem;
     height: 2.8rem;
     line-height: 2.8rem;
     margin-right: 1.6rem;
   }
-  #login {
+  #rightRegisterBtn {
     width: 5.5rem;
     height: 2.8rem;
     line-height: 2.8rem;
@@ -119,35 +125,28 @@
 }
 
 @media (min-height: 740px) {
-  #register {
+  #leftLoginBtn {
     font-size: 0.9rem;
   }
-  #login {
+  #rightRegisterBtn {
     font-size: 0.9rem;
   }
 }
 
 #header {
     position: absolute;
-    bottom: 4rem;
-    right: 2rem;
+    top: 85%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    width: 75%;
+    height: 7rem;
+    text-align: center;
     color: #fffbfc;
-    width: 28rem;
     font-size: 2rem;
 }
-
-@media (min-width: 1025px) {
-    #header {
-      position: absolute;
-      bottom: 4rem;
-      right: 2rem;
-      width: 52rem;
-    }
-}
-
-
 </style>
-<link rel="stylesheet" type="text/css" href="{% static "css/styles.css" %}" />
 {% endblock head %}
 
 {% block content %}
@@ -157,8 +156,8 @@
     <div class="display"/>
     <div class="buttons">
         <!-- Going to have to create <a> tags for link -->
-        <a id="login" class="btn" href="/login">Login</a>
-        <a id="register" class="btn" href="/register">Register</a>
+        <a id="leftLoginBtn" class="btn" href="/login">Login</a>
+        <a id="rightRegisterBtn" class="btn" href="/register">Register</a>
     </div>
     <h1 id="header">Manage your Crypto Currency in One Convenient Location</h1>
 </div>

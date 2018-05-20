@@ -67,21 +67,23 @@ class Navbar extends Component {
 
   // full screen MenuItems component will need react-media to set it to display: none for small screens.
   render() {
+    const { toggleOverlay, location, menuItems } = this.props
+    const { overlayActive } = this.state
     return(
       <ContainerDiv>
         <NameDiv>
-          <P onClick={ this.toggleOverlay }>X</P>
+          { overlayActive ? <P onClick={ toggleOverlay }>X</P> : <P>Welcome</P> }
         </NameDiv>
         <Media query="(min-width: 900px)">
           { matches =>
             matches 
-            ? <MenuItems location={ this.props.location } menuItems={ this.props.menuItems }/>
+            ? <MenuItems location={ location } menuItems={ menuItems }/>
             : null
           }
         </Media>
-        { this.state.overlayActive &&
-          <Overlay onClose={this.toggleOverlay}>
-            <MenuItems location={ this.props.location } menuItems={ this.props.menuItems }/>
+        { overlayActive &&
+          <Overlay onClose={ toggleOverlay }>
+            <MenuItems location={ location } menuItems={ menuItems }/>
           </Overlay>
         }
       </ContainerDiv>

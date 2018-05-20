@@ -1,13 +1,6 @@
-from rest_framework.response import Response
 from rest_framework.serializers import (
-    CharField,
     DecimalField,
-    EmailField,
-    HyperlinkedIdentityField,
     ModelSerializer,
-    ListSerializer,
-    SerializerMethodField,
-    ValidationError
 )
 
 from .models import (
@@ -81,11 +74,6 @@ class SellOrderCreateSerializer(ModelSerializer):
             'exchange_fee_btc',
             'exchange_fee_fiat',
         ]
-
-    # def validate(request, data):
-    #     print('data from within validate')
-    #     print(data)
-    #     return data
 
 
 class ProfitLossTransactionCreateSerializer(ModelSerializer):

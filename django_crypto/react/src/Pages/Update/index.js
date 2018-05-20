@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import styled from 'styled-components'
 
 import Header from '../../SharedComponents/FormComponents/header'
 import Form from './Form'
-import PieChart from '../../SharedComponents/D3Components/PieChart'
+import TickReveal from './TickReveal'
 
+// this component is prime for a compound component refactor
+// in a new file
 
 const ContainerDiv= styled.div`
   display: flex;
@@ -166,12 +169,35 @@ class Update extends Component {
 
   render() {
     const { buyOrder, sellOrder, withdraw, deposit } = this.state
+    const { submitInProgress, addNewCryptoSuccess, addNewCryptoErr } = this.props
     const selectedStyle = {
       'color': '#fffbfc',
       'background': '#c21500',
       'background': '-webkit-linear-gradient(to right, #FFA900, #c21500)',
       'background': 'linear-gradient(to right, #FFA900, #c21500)',
       'border': 'solid #fffbfc .1rem'
+    }
+
+    if(submitInProgress) {
+      return (
+        <ContainerDiv>
+          <h2>Loading...</h2>
+        </ContainerDiv>
+      )
+    }
+    if(addNewCryptoSuccess) {
+      return (
+        <ContainerDiv>
+          <TickReveal/>
+        </ContainerDiv>
+      )
+    }
+    if(addNewCryptoErr) {
+      return (
+        <ContainerDiv>
+          <h2>An error occurred.</h2>
+        </ContainerDiv>
+      )
     }
 
     return (
@@ -189,4 +215,9 @@ class Update extends Component {
   }
 }
 
-export default Update
+
+function mapStateToProps({ submitInProgress, addNewCryptoSuccess, addNewCryptoErr }) {
+  return { submitInProgress, addNewCryptoSuccess, addNewCryptoErr }
+}
+
+export default connect(mapStateToProps, null)(Update)
