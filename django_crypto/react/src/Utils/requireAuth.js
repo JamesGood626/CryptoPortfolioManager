@@ -5,10 +5,7 @@ import { Redirect } from 'react-router-dom'
 const requireAuth = (WrappedComponent) => {
   class VerifyAuth extends Component {
     render() {
-      console.log("USER AUTHENTICATED FROM WITHIN REQUIRE AUTH")
-      console.log(this.props.userAuthenticated)
       if(this.props.userAuthenticated) {
-        console.log(this.props.userAuthenticated)
         return <WrappedComponent {...this.props} />
       }
       else {

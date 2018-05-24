@@ -28,20 +28,20 @@ import {
   COIN_API_KEY
 } from './devVenv'
 
-const DEV_API = 'http://127.0.0.1:8000'
+const PROD_API = 'http://127.0.0.1:8000'
 const PROD_API = 'https://crypto-portfolio-manager.herokuapp.com'
-const REGISTER_USER_URL = `${ DEV_API }/users/api/register/`
-const LOGIN_USER_URL = `${  DEV_API }/users/login/`
-const GET_JWT_URL = `${ DEV_API }/users/api/token/auth/`
-const SYMBOL_LIST_URL = `${ DEV_API }/api/portfolio/crypto-symbol/list/`
-const ADD_NEW_BUY_ORDER_URL = `${ DEV_API }/api/transactions/buy-order/create/`
-const ADD_NEW_SELL_ORDER_URL = `${  DEV_API }/api/transactions/sell-order/create/`
-const BUY_ORDER_LIST_URL = `${  DEV_API }/api/transactions/buy-order/list/`
-const SELL_ORDER_LIST_URL = `${ DEV_API }/api/transactions/sell-order/list/`
-const FIAT_OPTION_LIST_URL = `${  DEV_API }/api/settings/fiat-options/list/`
-const USER_SETTINGS_LIST_URL = `${  DEV_API }/api/settings/user-settings/list/`
-const PROFIT_LOSS_TRANSACTION_LIST_URL = `${  DEV_API }/api/transactions/profit-loss-transaction/list/`
-const CRYPTO_ASSET_LIST_URL = `${ DEV_API }/api/portfolio/crypto-asset/list/`
+const REGISTER_USER_URL = `${ PROD_API }/users/api/register/`
+const LOGIN_USER_URL = `${ PROD_API }/users/login/`
+const GET_JWT_URL = `${ PROD_API }/users/api/token/auth/`
+const SYMBOL_LIST_URL = `${ PROD_API }/api/portfolio/crypto-symbol/list/`
+const ADD_NEW_BUY_ORDER_URL = `${ PROD_API }/api/transactions/buy-order/create/`
+const ADD_NEW_SELL_ORDER_URL = `${ PROD_API }/api/transactions/sell-order/create/`
+const BUY_ORDER_LIST_URL = `${ PROD_API }/api/transactions/buy-order/list/`
+const SELL_ORDER_LIST_URL = `${ PROD_API }/api/transactions/sell-order/list/`
+const FIAT_OPTION_LIST_URL = `${ PROD_API }/api/settings/fiat-options/list/`
+const USER_SETTINGS_LIST_URL = `${ PROD_API }/api/settings/user-settings/list/`
+const PROFIT_LOSS_TRANSACTION_LIST_URL = `${ PROD_API }/api/transactions/profit-loss-transaction/list/`
+const CRYPTO_ASSET_LIST_URL = `${ PROD_API }/api/portfolio/crypto-asset/list/`
 
 // UPDATE URLS
 const UPDATE_USER_FIAT_OPTION_URL = 'http://127.0.0.1:8000/api/settings/user-settings/update/'
@@ -120,7 +120,7 @@ export const getHistoricalRate = values => async dispatch => {
   const trueUSDHistoricalRate = historicalRateConversion.getTrueHistoricalRate(ratioDifference, historicalRateUSDConversion.data.rate)
 
   // In the case above it was a matter of converting between the ICX/BTC price per unit to the price of USD/BTC, and as such
-  // you'd need to divide the much lower price that is obtained through trueUSDHistoricalRate USD/BTC into the much higher
+  // you'd need to divide the lower price that is obtained through trueUSDHistoricalRate USD/BTC into the higher
   // values.price rate for ICX/BTC result being around 11 dollars.
   const historicalUSDPricePerUnit = values.price / trueUSDHistoricalRate
 
@@ -146,9 +146,9 @@ export const getHistoricalRate = values => async dispatch => {
     createOrderDict.quantity = parseFloat(values.quantity).toFixed(6)
     createOrderDict.ticker = values.baseCurrency
     createOrderDict.sell_price_btc = bitcoinPriceInfo.trueBitcoinHistoricalPrice.toFixed(6)
-    createOrderDict.sell_price_usd = historicalUSDPricePerUnit.toFixed(6)
+    createOrderDict.sell_price_FIAT = historicalUSDPricePerUnit.toFixed(6)
     createOrderDict.exchange_fee_btc = parseFloat(bitcoinPriceInfo.feeBTC).toFixed(6)
-    createOrderDict.exchange_fee_fiat = feeUSD.toFixed(2)
+    createOrderDict.exchange_fee_fiat = parseFloat(feeUSD).toFixed(2)
   }
   // Creates an object with the following properties:
   // quantity
@@ -160,22 +160,37 @@ export const getHistoricalRate = values => async dispatch => {
   dispatch(addNewCrypto(createOrderDict))
 }
 
+// I should have thought this one through a little bit more.. Plan it out and then storm the beaches
 export const getBitcoinHistoricalRate = values => async dispatch => {
   dispatch({ type: SUBMIT_IN_PROGRESS, payload: true })
-  const historicalBitcoinRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/BTC?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+  const historicalUSDToBaseRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}${values.baseCurrency}/USD?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+  // baseCurrency is the quoteCurrency in this api call
+  const historicalBaseToUSDRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.baseCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
   
-  const feeBTC = bitcoinHistoricalRateUSDConversion.getFeeBTC(historicalBitcoinRateData.data.rate, values.fee)
-  const priceBTC = bitcoinHistoricalRateUSDConversion.getPriceBTC(historicalBitcoinRateData.data.rate, values.price)
+  const ratioDifference = historicalRateConversion.getRatioDifference(historicalUSDToBaseRateData.data.rate, values.price)
+  let priceForCrypto
+  let feeBTC
+  if (values.baseCurrency !== 'BTC') {
+    const historicalBaseToUSDRateData = await axios.get(`${COIN_API_HISTORICAL_RATE_URL}USD/${values.baseCurrency}?time=${values.dateTime}&apikey=${COIN_API_KEY}`)
+    priceForCrypto = historicalRateConversion.getTrueHistoricalRate(ratioDifference, historicalBaseToUSDRateData.data.rate)
+  }
+  else {
+    priceForCrypto = 1
+    feeBTC = bitcoinHistoricalRateUSDConversion.getFeeBTC(priceForCrypto, values.fee)
+  }
 
+  //const feeBTC = bitcoinHistoricalRateUSDConversion.getFeeBTC(historicalUSDToBaseRateData.data.rate, values.fee)
+  //const priceForCrypto = bitcoinHistoricalRateUSDConversion.getPriceForCrypto(historicalUSDToBaseRateData.data.rate, values.price)
+  //console.log("priceForCrypto: ", priceForCrypto)
   let createOrderDict = {}
   if(values.deposit) {
     createOrderDict.buyOrder = values.deposit
-    createOrderDict.purchase_price_btc = priceBTC.toFixed(6)
+    createOrderDict.purchase_price_btc = parseFloat(priceForCrypto).toFixed(6)
     createOrderDict.purchase_price_fiat = parseFloat(values.price).toFixed(6)
   }
   else if (values.withdraw) {
     createOrderDict.sellOrder = values.withdraw
-    createOrderDict.sell_price_btc = priceBTC.toFixed(6)
+    createOrderDict.sell_price_btc = parseFloat(priceForCrypto).toFixed(6)
     createOrderDict.sell_price_fiat = parseFloat(values.price).toFixed(6)
   }
   createOrderDict.ticker = values.baseCurrency
@@ -187,24 +202,22 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
 }
 
 export const addNewCrypto = values => async dispatch => {
-  console.log("Values passed into addNewCrypto")
-  console.log(values)
+  // console.log("Values passed into addNewCrypto")
+  // console.log(values)
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     if(values['buyOrder']) {
       axios.post(`${ADD_NEW_BUY_ORDER_URL}`, values, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
-        .then(function (response) {
+        .then(response => {
           dispatch({ type: SUBMIT_IN_PROGRESS, payload: false })
-          console.log("the success")
           dispatch({ type: ADD_NEW_CRYPTO_SUCCESS, payload: true })
           setTimeout(() => {
               dispatch({ type: ADD_NEW_CRYPTO_SUCCESS, payload: false })
             }, 3000
           )
         })
-        .catch(function (error) {
+        .catch(error => {
           dispatch({ type: SUBMIT_IN_PROGRESS, payload: false })
-          console.log("the failure")
           if(error.response.status === 401) {
             dispatch(signOutUser())
           }
@@ -218,18 +231,20 @@ export const addNewCrypto = values => async dispatch => {
         })
     }
     else if(values['sellOrder']) {
-      axios.post(`${ADD_NEW_SELL_ORDER_URL}`, values, { headers: {Authorization: `JWT ${AUTH_TOKEN}` } })
-        .then(function (response) {
-          console.log(response)
+      axios.post(`${ADD_NEW_SELL_ORDER_URL}`, values, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
+        .then(response => {
+          return response
+          // console.log(response)
         })
-        .catch(function (error) {
-          console.log(error)
+        .catch(error => {
+          return error
+          // console.log(error)
         })
     }
   }
 }
 
-export const getBuyOrderList = (values) => async dispatch => {
+export const getBuyOrderList = values => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(BUY_ORDER_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
@@ -240,7 +255,7 @@ export const getBuyOrderList = (values) => async dispatch => {
   }
 }
 
-export const getSellOrderList = (values) => async dispatch => {
+export const getSellOrderList = values => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(SELL_ORDER_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
@@ -251,7 +266,7 @@ export const getSellOrderList = (values) => async dispatch => {
   }
 }
 
-export const getFiatOptionList = (values) => async dispatch => {
+export const getFiatOptionList = values => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(FIAT_OPTION_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
@@ -259,7 +274,7 @@ export const getFiatOptionList = (values) => async dispatch => {
   }
 }
 
-export const getUserSettingsList = (values) => async dispatch => {
+export const getUserSettingsList = values => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(USER_SETTINGS_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
@@ -267,12 +282,12 @@ export const getUserSettingsList = (values) => async dispatch => {
   }
 }
 
-export const getProfitLossTransactionList = (values) => async dispatch => {
+export const getProfitLossTransactionList = values => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(PROFIT_LOSS_TRANSACTION_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })
     if(response.data.length === 0) {
-      return
+      return // what you doin here?
     }
     let refinedPLTransactionList = transformProfitLossTransactionList.filterObjects(response.data)
     dispatch({ type: GET_PROFIT_LOSS_TRANSACTION_LIST, payload: response })
@@ -280,7 +295,7 @@ export const getProfitLossTransactionList = (values) => async dispatch => {
   }
 }
 
-export const getCryptoAssetList = (values) => async dispatch => {
+export const getCryptoAssetList = values => async dispatch => {
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     const response = await axios.get(CRYPTO_ASSET_LIST_URL, { headers: { Authorization: `JWT ${AUTH_TOKEN}` } })

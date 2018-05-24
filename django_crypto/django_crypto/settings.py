@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 # heroku config:set DISABLE_COLLECTSTATIC=1
 import os
-# import dj_database_url
+import dj_database_url
 import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
@@ -55,8 +55,8 @@ INSTALLED_APPS = [
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
-    # 'crypto-portfolio-manager.herokuapp.com'
+    # 'localhost:3000',
+    'crypto-portfolio-manager.herokuapp.com'
     # '127.0.0.1'
     # 'http://localhost:8000',
 )
@@ -98,15 +98,15 @@ WSGI_APPLICATION = 'django_crypto.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'crypto_portfolio',
-        'USER': 'crypto_portfolio_dev',
-        'PASSWORD': 'cryptoportfoliodev',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-    # 'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'crypto_portfolio',
+    #     'USER': 'crypto_portfolio_dev',
+    #     'PASSWORD': 'cryptoportfoliodev',
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
+    # }
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 

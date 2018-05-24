@@ -5,7 +5,6 @@ import tickRevealAnim from '../../Resources/tick_reveal.json'
 
 class TickReveal extends Component {
   componentDidMount = () => {
-    console.log("TICK REVEAL MOUNTIN: ", this.tickReveal)
     const animationWindow = this.tickReveal
     const animData = {
       wrapper: animationWindow,

@@ -30,55 +30,62 @@
     background-size: cover;
 }
 
-#logo {
-    position: absolute;
-    top: 2.2rem;
-    left: 2.8rem;
-    color: #fffbfc;
-    font-weight: 300;
-}
-
-.buttons {
-    position: absolute;
-    top: 0;
-    right: 1rem;
+.navContainer {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 7rem;
-    width: 12rem;
+    height: 6rem;
 }
 
-/* @media (min-width: 742px) {
-    .buttons {
-        right: 1rem;
-        transform: translateX(0);
+#logo {
+    margin: 0;
+    color: #fffbfc;
+    font-size: 0.8rem;
+    font-weight: 300;
+}
+
+@media screen and (min-width: 600px) {
+    #logo {
+        font-size: 1.2rem;
     }
-} */
+}
+
+.buttonsContainer {
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 5rem;
+    width: 12rem;
+    padding: 0;
+}
 
 .btn {
-    color: #fffbfc;
-    background: #c21500;
-    background: -webkit-linear-gradient(to right, #FFA900, #c21500);
-    background: linear-gradient(to right, #FFA900, #c21500);
-    border: solid #fffbfc .1rem;
-    text-decoration: none;
-}
-
-#leftLoginBtn {
     width: 4rem;
     height: 2rem;
+    color: #c21500;
+    background: #fffbfc;
+    border: solid #fffbfc .1rem;
     margin: 0;
-    font-size: 2vh;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+/* background: -webkit-linear-gradient(to right, #FFA900, #c21500);
+background: linear-gradient(to right, #FFA900, #c21500); */
+#leftLoginBtn {
+    font-size: 1rem;
     line-height: 2rem;
     text-align: center;
     border-top-right-radius: 14px;
     border-bottom-left-radius: 14px;
     box-shadow: 2px 2px 3px #ccc;
+    margin-right: 1.6rem;
 }
 
 #leftLoginBtn:hover {
     background: #17CA4A;
+    color: #fffbfc;
 }
 
 #leftLoginBtn:focus {
@@ -86,52 +93,66 @@
 }
 
 #rightRegisterBtn {
-    width: 4rem;
-    height: 2rem;
-    margin: 0;
-    font-size: 2vh;
+    font-size: 1rem;
     line-height: 2rem;
     text-align: center;
     border-top-left-radius: 14px;
     border-bottom-right-radius: 14px;
     box-shadow: 2px 2px 3px #ccc;
+    margin-left: 1.6rem;
+}
+
+@media screen and (min-width: 600px) {
+    #rightRegisterBtn {
+        font-size: 1.2rem;
+    }
+    #leftLoginBtn {
+        font-size: 1.2rem;
+    }
 }
 
 #rightRegisterBtn:hover {
     background: #17CA4A;
+    color: #fffbfc;
 }
 
 #rightRegisterBtn:focus {
     outline: 0;
 }
 
-@media (min-width: 900px) {
-  /* Modifying the button itself doesn't take effect? */
-  .buttons {
-      width: 18rem;
+@media screen and (min-width: 900px) {
+  .buttonsContainer {
+      width: 14rem;
   }
   #leftLoginBtn {
-    width: 5.5rem;
-    height: 2.8rem;
-    line-height: 2.8rem;
-    margin-right: 1.6rem;
+      width: 5.5rem;
+      height: 2.8rem;
+      line-height: 2.8rem;
   }
   #rightRegisterBtn {
-    width: 5.5rem;
-    height: 2.8rem;
-    line-height: 2.8rem;
-    margin-left: 1.6rem;
+      width: 5.5rem;
+      height: 2.8rem;
+      line-height: 2.8rem;
+  }
+}
+
+/* @media (max-height: 400px) {
+  #leftLoginBtn {
+      font-size: 0.8rem;
+  }
+  #rightRegisterBtn {
+      font-size: 0.8rem;
   }
 }
 
 @media (min-height: 740px) {
   #leftLoginBtn {
-    font-size: 0.9rem;
+      font-size: 0.9rem;
   }
   #rightRegisterBtn {
-    font-size: 0.9rem;
+      font-size: 0.9rem;
   }
-}
+} */
 
 #header {
     position: absolute;
@@ -144,7 +165,7 @@
     height: 7rem;
     text-align: center;
     color: #fffbfc;
-    font-size: 2rem;
+    font-size: 3.4vh;
 }
 </style>
 {% endblock head %}
@@ -152,36 +173,18 @@
 {% block content %}
 
 <div class="bg">
-    <h1 id="logo">Crypto Folio Flow<h1>
-    <div class="display"/>
-    <div class="buttons">
-        <!-- Going to have to create <a> tags for link -->
-        <a id="leftLoginBtn" class="btn" href="/login">Login</a>
-        <a id="rightRegisterBtn" class="btn" href="/register">Register</a>
+    <div class="navContainer">
+        <div id="logo">
+            <h1>Crypto Folio Flow<h1>
+        </div>
+        <div class="buttonsContainer">
+            <!-- Going to have to create <a> tags for link -->
+            <a id="leftLoginBtn" class="btn" href="/login">Login</a>
+            <a id="rightRegisterBtn" class="btn" href="/register">Register</a>
+        </div>
     </div>
+    <div class="display"/>
     <h1 id="header">Manage your Crypto Currency in One Convenient Location</h1>
 </div>
-
-
-<!-- <div class="macbook"> -->
-<!-- <img src="{% static "img/CryptoFolioFlowMacbook.png" %}"/> -->
-<!-- </div> -->
-<!-- <svg class="svgBg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1364.86 769.78">
-  <defs>
-    <style>
-      .cls-1{fill:#fff;stroke:#000;stroke-miterlimit:10}.cls-2{fill:url(#linear-gradient)}.cls-3{fill:url(#linear-gradient-2)}
-    </style>
-    <linearGradient id="linear-gradient" x1=".57" y1="57.05" x2="388.79" y2="57.05" gradientTransform="translate(-.42 1.46)" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#faa900"/>
-      <stop offset="1" stop-color="#c21500"/>
-    </linearGradient>
-    <linearGradient id="linear-gradient-2" x1="108.41" y1="668.47" x2="1365" y2="668.47" xlink:href="#linear-gradient"/>
-  </defs>
-  <path class="cls-2" d="M386.14-.85S411 114 301 114.78L1 117 .14 0z" transform="translate(-40, -20)"/>
-  <path class="cls-3" d="M109 766S85 568 364 568h1021v200s-1256 3.1-1256-2z" transform="translate(20, 24)"/>
-</svg> -->
-
-
-
 
 {% endblock content %}

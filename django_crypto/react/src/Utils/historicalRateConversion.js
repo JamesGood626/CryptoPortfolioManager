@@ -2,9 +2,14 @@ import axios from 'axios'
 
 const historicalRateConversion = {
   getRatioDifference: function (historicalDataRate, price) {
-    return (historicalDataRate - price)/price
+    // console.log('historicalDataRate: ', historicalDataRate)
+    // console.log('price: ', price)
+    // console.log(' the result of get ratio diff: ', (price - historicalDataRate)/historicalDataRate)
+    return (price - historicalDataRate)/historicalDataRate
   },
   getTrueHistoricalRate: function (ratioDifference, apiHistoricalRate) {
+    // console.log('ratioDifference: ', ratioDifference)
+    // console.log('apiHistoricalRate: ', apiHistoricalRate)
     let trueHistoricalRate
     const extraneousAmount = Math.abs(ratioDifference * apiHistoricalRate)
     if (ratioDifference > 0) {
@@ -20,18 +25,14 @@ const historicalRateConversion = {
     if(values.quoteCurrency !== "BTC") {
       result = await this.quoteCurrencyIsBTCProcedure(values, ratioDifference, api_url, api_key)
         .then(data => data)
-      console.log("THE RESULT INSIDE THE IF BLOCK")
-      console.log(result)
     }
     else if (values.buyOrder) {
       result = this.buyOrderHistoricalBitcoinRate(values, historicalOrderRateDataForBuyOrder, ratioDifference)
     }
     else if (values.sellOrder) {
-      result = await this.sellOrderHistoricalBitcoinRate(values, ratioDifference, api_url. api_key)
+      result = await this.sellOrderHistoricalBitcoinRate(values, ratioDifference, api_url, api_key)
         .then(data => data)
     }
-    console.log("THIS IS RESULT")
-    console.log(result)
     return result
   },
   quoteCurrencyIsBTCProcedure: async function (values, ratioDifference, api_url, api_key) {

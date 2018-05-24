@@ -61,7 +61,6 @@ class Navbar extends Component {
   }
 
   toggleOverlay() {
-    console.log("Togglin")
     this.setState({ overlayActive: !this.state.overlayActive })
   }
 

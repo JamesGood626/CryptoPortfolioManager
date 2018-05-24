@@ -177,7 +177,6 @@ class PortfolioPerformance extends Component {
     const { cryptoAssetList, coinMarketApiDataList } = this.props
     if(!pieChartData && !barChartData) {
       if (coinMarketApiDataList) {
-        console.log("THIS IF STATEMENT INSIDE OF THE RENDER FUNCTION RUNNING")
         const cryptoAssetObj = coinMarketApiDataList[0]
         if(cryptoAssetObj && this.state.cryptoAssetTitles.length === 0) {
           let keyList = Object.getOwnPropertyNames(cryptoAssetObj)

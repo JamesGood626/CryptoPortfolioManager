@@ -203,10 +203,10 @@ class Update extends Component {
     return (
       <ContainerDiv>
         <OrderTypeDiv>
-          <BuyButton style={ buyOrder ? selectedStyle : null } onClick={ !buyOrder && this.selectOrderType }>Buy</BuyButton>
-          <BuyButton style={ deposit ? selectedStyle : null } onClick={ !deposit && this.selectOrderType }>Deposit</BuyButton>
-          <SellButton style={ withdraw ? selectedStyle : null } onClick={ !withdraw && this.selectOrderType }>Withdraw</SellButton>
-          <SellButton style={ sellOrder ? selectedStyle : null } onClick={ !sellOrder && this.selectOrderType }>Sell</SellButton>
+          <BuyButton style={ buyOrder ? selectedStyle : null } onClick={ !buyOrder ? this.selectOrderType : null }>Buy</BuyButton>
+          <BuyButton style={ deposit ? selectedStyle : null } onClick={ !deposit ? this.selectOrderType : null }>Deposit</BuyButton>
+          <SellButton style={ withdraw ? selectedStyle : null } onClick={ !withdraw ? this.selectOrderType : null }>Withdraw</SellButton>
+          <SellButton style={ sellOrder ? selectedStyle : null } onClick={ !sellOrder ? this.selectOrderType : null }>Sell</SellButton>
         </OrderTypeDiv>
         <Header>Add a New Transaction</Header>
         <Form buyOrder={ buyOrder } sellOrder={ sellOrder } withdraw={ withdraw } deposit={ deposit }/>
