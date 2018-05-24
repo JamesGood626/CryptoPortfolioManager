@@ -56,8 +56,8 @@ CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
     # 'localhost:3000',
-    'crypto-portfolio-manager.herokuapp.com'
-    # '127.0.0.1'
+    'crypto-portfolio-manager.herokuapp.com',
+    '127.0.0.1'
     # 'http://localhost:8000',
 )
 
