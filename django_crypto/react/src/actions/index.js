@@ -28,7 +28,7 @@ import {
   COIN_API_KEY
 } from './devVenv'
 
-const PROD_API = 'http://127.0.0.1:8000'
+const DEV_API = 'http://127.0.0.1:8000'
 const PROD_API = 'https://crypto-portfolio-manager.herokuapp.com'
 const REGISTER_USER_URL = `${ PROD_API }/users/api/register/`
 const LOGIN_USER_URL = `${ PROD_API }/users/login/`
