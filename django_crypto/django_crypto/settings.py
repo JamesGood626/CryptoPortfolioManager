@@ -156,7 +156,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 REACT_APP_DIR = os.path.join(BASE_DIR, 'react')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
