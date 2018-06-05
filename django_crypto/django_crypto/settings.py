@@ -32,7 +32,7 @@ else:
     SECRET_KEY = os.environ['SECRET_KEY']
 
 # COMMENT IN FOR PROD
-ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com']
 # ALLOWED_HOSTS = []
 
 # Application definition
