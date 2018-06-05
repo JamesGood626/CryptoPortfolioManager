@@ -179,12 +179,12 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
   let createOrderDict = {}
   if(values.deposit) {
     createOrderDict.buyOrder = values.deposit
-    createOrderDict.purchase_price_btc = priceBTC.toFixed(6)
+    createOrderDict.purchase_price_btc = typeof priceBTC === 'string' ? parseFloat(priceBTC).toFixed(6) : priceBTC
     createOrderDict.purchase_price_fiat = parseFloat(values.price).toFixed(2)
   }
   else if (values.withdraw) {
     createOrderDict.sellOrder = values.withdraw
-    createOrderDict.sell_price_btc = priceBTC.toFixed(6)
+    createOrderDict.sell_price_btc = typeof priceBTC === 'string' ? parseFloat(priceBTC).toFixed(6) : priceBTC
     createOrderDict.sell_price_fiat = parseFloat(values.price).toFixed(2)
   }
   createOrderDict.ticker = values.baseCurrency
