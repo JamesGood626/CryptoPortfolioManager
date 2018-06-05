@@ -10,15 +10,6 @@ const TableDiv = styled.div`
   background-color: #fcfafa;
 `
 
-const NotificationDiv = styled.div`
-  height: 40vh;
-  width: 100%;
-  padding: 1rem 1rem 0 1rem;
-  text-align: center;
-  color: #1C1C1C;
-  font-size: 4vh;
-`
-
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -53,9 +44,6 @@ const transactionTable = ({ buy_order_config, sell_order_config, pl_transaction_
   const config = buy_order_config || sell_order_config || pl_transaction_config
   if (config.list && config.list[0]) {
     var keys = Object.getOwnPropertyNames(config.list[0])
-  }
-  if (config.list === null) {
-    return <NotificationDiv>Have you initiated a transaction yet?</NotificationDiv>
   }
 
   return (

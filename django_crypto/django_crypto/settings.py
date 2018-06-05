@@ -32,8 +32,8 @@ else:
     SECRET_KEY = os.environ['SECRET_KEY']
 
 # COMMENT IN FOR PROD
-# ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com', '127.0.0.1']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com', '127.0.0.1']
+# ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -56,9 +56,9 @@ INSTALLED_APPS = [
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
+    # 'localhost:3000',
     'crypto-portfolio-manager.herokuapp.com',
-    '127.0.0.1',
+    # '127.0.0.1',
     # 'http://localhost:8000',
 )
 
@@ -99,16 +99,16 @@ WSGI_APPLICATION = 'django_crypto.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'crypto_portfolio',
-        'USER': 'crypto_portfolio_dev',
-        'PASSWORD': 'cryptoportfoliodev',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'crypto_portfolio',
+    #     'USER': 'crypto_portfolio_dev',
+    #     'PASSWORD': 'cryptoportfoliodev',
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
+    # }
     # COMMENT IN FOR PROD
-    # 'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 

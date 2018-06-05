@@ -37,6 +37,15 @@ const LoadingDiv = Div.extend`
   width: 100%;
 `
 
+const NotificationDiv = styled.div`
+  height: 40vh;
+  width: 100%;
+  padding: 1rem 1rem 0 1rem;
+  text-align: center;
+  color: #1C1C1C;
+  font-size: 4vh;
+`
+
 const ChartTypeDiv = styled.div`
   display: flex;
   justify-content: space-between;
@@ -160,6 +169,7 @@ class PortfolioPerformance extends Component {
     super(props)
 
     this.state = {
+      fetching: true,
       cryptoAssetTitles: [],
       showPieChart: true,
       showBarChart: false,
@@ -172,6 +182,14 @@ class PortfolioPerformance extends Component {
     this.props.getCryptoAssetList()
   }
 
+  fetchingToFalse = () => {
+    if(this.state.fetching) {
+      this.setState(() => ({
+        fetching: false
+      }))
+    }
+  }
+
   toggleCharts = () => {
     this.setState((prevState, state) => ({
       showPieChart: !prevState.showPieChart,
@@ -180,10 +198,21 @@ class PortfolioPerformance extends Component {
   }
 
   render() {
-    const { cryptoAssetTitles, showPieChart, showBarChart, pieChartData, barChartData } = this.state
-    const { cryptoAssetList, coinMarketApiDataList } = this.props
+    const { 
+      fetching, 
+      cryptoAssetTitles, 
+      showPieChart, 
+      showBarChart, 
+      pieChartData, 
+      barChartData 
+    } = this.state
+    const { 
+      cryptoAssetList, 
+      coinMarketApiDataList 
+    } = this.props
     if(!pieChartData && !barChartData) {
       if (coinMarketApiDataList) {
+        this.fetchingToFalse()
         const cryptoAssetObj = coinMarketApiDataList[0]
         if(cryptoAssetObj && this.state.cryptoAssetTitles.length === 0) {
           let keyList = Object.getOwnPropertyNames(cryptoAssetObj)
@@ -253,7 +282,8 @@ class PortfolioPerformance extends Component {
         </ContainerDiv>
       )
     }
-    return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
+    if (fetching) return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
+    return <NotificationDiv>Have you initiated a transaction yet?</NotificationDiv>
   }
 }
 

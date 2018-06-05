@@ -31,6 +31,18 @@ const LoadingDiv = styled.div`
   width: 100%;
 `
 
+const NotificationDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  padding: 1rem 1rem 0 1rem;
+  text-align: center;
+  color: #1C1C1C;
+  font-size: 4vh;
+`
+
 const OrderTypeDiv = styled.div`
   display: flex;
   justify-content: space-around;
@@ -85,6 +97,7 @@ class Transactions extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      fetching: true,
       displayBuyOrders: true,
       displaySellOrders: false,
       displayActualizedPL: false,
@@ -98,6 +111,14 @@ class Transactions extends Component {
     this.props.getBuyOrderList()
     this.props.getSellOrderList()
     this.props.getProfitLossTransactionList()
+  }
+
+  fetchingToFalse = () => {
+    if(this.state.fetching) {
+      this.setState(() => ({
+        fetching: false
+      }))
+    }
   }
 
   toggleDisplayBuy = () => {
@@ -157,8 +178,8 @@ class Transactions extends Component {
   // }
 
   render() {
-    const { buyOrderList, sellOrderList, refinedProfitLossTransactionList } = this.props
-    const { 
+    const {
+      fetching,
       displayBuyOrders, 
       displaySellOrders, 
       displayActualizedPL, 
@@ -166,8 +187,14 @@ class Transactions extends Component {
       sellOrderTitles, 
       profitLossTransactionTitles 
     } = this.state
+    const { 
+      buyOrderList, 
+      sellOrderList, 
+      refinedProfitLossTransactionList 
+    } = this.props
 
     if (buyOrderList) {
+      this.fetchingToFalse()
       const buyOrderObj = buyOrderList[0]
       if(buyOrderObj && buyOrderTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(buyOrderObj)
@@ -179,6 +206,7 @@ class Transactions extends Component {
     }
     
     if (sellOrderList) {
+      this.fetchingToFalse()
       const sellOrderObj = sellOrderList[0]
       if(sellOrderObj && sellOrderTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(sellOrderObj)
@@ -189,7 +217,8 @@ class Transactions extends Component {
       }
     }
     
-    if (this.props.refinedProfitLossTransactionList) {
+    if (refinedProfitLossTransactionList) {
+      this.fetchingToFalse()
       const profitLossTransactionObj = refinedProfitLossTransactionList[0]
       if(profitLossTransactionObj && profitLossTransactionTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(profitLossTransactionObj)
@@ -262,7 +291,10 @@ class Transactions extends Component {
         </ContainerDiv>
       )
     }
-    return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
+    if (fetching) { 
+      return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
+    }
+    return <NotificationDiv><h2>Have you initiated a transaction yet?</h2></NotificationDiv>
   }
 }
 
