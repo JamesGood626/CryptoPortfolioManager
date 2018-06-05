@@ -169,7 +169,8 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
   if (values.baseCurrency === 'BTC') {
     priceBTC = values.quantity
   } else {
-    var historicalBaseToBTCRateData = await axios.get(`${ COIN_API_HISTORICAL_RATE_URL }${ values.baseCurrency }/BTC?time=${ values.dateTime }&apikey=${ COIN_API_KEY }`)
+    const historicalBaseToBTCRateData = await axios.get(`${ COIN_API_HISTORICAL_RATE_URL }${ values.baseCurrency }/BTC?time=${ values.dateTime }&apikey=${ COIN_API_KEY }`)
+    priceBTC = historicalBaseToBTCRateData.data.rate
   }
 
   const historicalUSDBTCRateData = await axios.get(`${ COIN_API_HISTORICAL_RATE_URL }USD/BTC?time=${ values.dateTime }&apikey=${ COIN_API_KEY }`)
@@ -178,12 +179,12 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
   let createOrderDict = {}
   if(values.deposit) {
     createOrderDict.buyOrder = values.deposit
-    createOrderDict.purchase_price_btc = historicalBaseToBTCRateData.data.rate.toFixed(6)
+    createOrderDict.purchase_price_btc = priceBTC.toFixed(6)
     createOrderDict.purchase_price_fiat = parseFloat(values.price).toFixed(2)
   }
   else if (values.withdraw) {
     createOrderDict.sellOrder = values.withdraw
-    createOrderDict.sell_price_btc = historicalBaseToBTCRateData.data.rate.toFixed(6)
+    createOrderDict.sell_price_btc = priceBTC.toFixed(6)
     createOrderDict.sell_price_fiat = parseFloat(values.price).toFixed(2)
   }
   createOrderDict.ticker = values.baseCurrency
