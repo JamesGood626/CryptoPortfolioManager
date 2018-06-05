@@ -347,8 +347,8 @@ def create_or_update_crypto_asset(buy_order):
     purchase_price_fiat = buy_order.purchase_price_fiat
     exchange_fee_btc = buy_order.exchange_fee_btc
     exchange_fee_fiat = buy_order.exchange_fee_fiat
-    initial_investment_btc = Decimal((quantity * purchase_price_btc)) + Decimal(exchange_fee_btc)
-    initial_investment_fiat = Decimal((quantity * purchase_price_fiat)) + Decimal(exchange_fee_fiat)
+    initial_investment_btc = Decimal(quantity * purchase_price_btc) + Decimal(exchange_fee_btc)
+    initial_investment_fiat = Decimal(quantity * purchase_price_fiat) + Decimal(exchange_fee_fiat)
 
     try:
         crypto_asset = CryptoAsset.objects.get(
