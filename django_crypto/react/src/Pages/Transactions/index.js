@@ -193,6 +193,10 @@ class Transactions extends Component {
       refinedProfitLossTransactionList 
     } = this.props
 
+    if(!buyOrderList || !sellOrderList || !refinedProfitLossTransactionList) {
+      this.fetchingToFalse()
+    }
+
     if (buyOrderList) {
       this.fetchingToFalse()
       const buyOrderObj = buyOrderList[0]
@@ -294,7 +298,7 @@ class Transactions extends Component {
     if (fetching) { 
       return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
     }
-    return <NotificationDiv><h2>Have you initiated a transaction yet?</h2></NotificationDiv>
+    return <NotificationDiv>Have you initiated a transaction yet?</NotificationDiv>
   }
 }
 
