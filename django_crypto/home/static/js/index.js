@@ -33,14 +33,14 @@ window.onload = function() {
   }
 
   var tlX = new TimelineLite()
-  tlX.set(leftBurger, {transformOrigin:'center'})
-  tlX.set(rightBurger, {transformOrigin:'center'})
+  TweenLite.set(leftBurger, {transformOrigin:'center'})
+  TweenLite.set(rightBurger, {transformOrigin:'center'})
   tlX.to(leftBurger, 0.25, {y:"16.67px"})
   tlX.to(rightBurger, 0.25, {y:"-16.67px"}, "-=0.25")
   tlX.to(leftBurger, 0.25, {rotation:"-45deg"})
   tlX.to(rightBurger, 0.25, {rotation:"45deg"}, "-=0.25")
   tlX.pause()
-  
+
   function animateBurgerToX() {
       tlX.play()
   }
