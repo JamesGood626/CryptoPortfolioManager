@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { registerUser } from '../../actions'
 import { Field, reduxForm } from 'redux-form'
 import Input from '../../SharedComponents/FormComponents/input'
+import PasswordInput from '../../SharedComponents/FormComponents/passwordInput'
 import Header from '../../SharedComponents/FormComponents/header'
 import SubmitButton from '../../SharedComponents/submitButton'
 import validateEmails from '../../Utils/validateEmail'
@@ -60,13 +61,13 @@ class Form extends Component {
   renderFields() {
     return FIELDS.map( ({ label, name }) => {
       return (
-          <Field
-            key={ name }
-            label={ label }
-            name={ name }
-            type="text"
-            component={ Input } 
-          />
+        <Field
+          key={ name }
+          label={ label }
+          name={ name }
+          type="text"
+          component={ (name === 'password' || name === 'confirmPassword') ? PasswordInput : Input }
+        />
       )
     })
   }

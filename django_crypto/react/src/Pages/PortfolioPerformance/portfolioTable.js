@@ -51,7 +51,7 @@ const portfolioTable = ({ titles, cryptoAssetList }) => {
               { titles ?
               titles.map(title => {
                   return (
-                    <Th>{ title }</Th>
+                    <Th key={ title }>{ title }</Th>
                   )
                 }) : null
               } 
@@ -59,17 +59,17 @@ const portfolioTable = ({ titles, cryptoAssetList }) => {
           </thead>
           <tbody>
               { cryptoAssetList ?
-              cryptoAssetList.map(cryptoAsset => {
-                return ( 
-                  <Tr>
-                    { 
-                      titleKeys.map(property => { 
-                        return <Td>{ cryptoAsset[property] }</Td> 
-                      }) 
-                    }
-                  </Tr>
-                )
-              }) : null
+                cryptoAssetList.map(cryptoAsset => {
+                  return ( 
+                    <Tr key={ cryptoAsset.ticker }>
+                      { 
+                        titleKeys.map((property, i) => { 
+                          return <Td key={ cryptoAsset.ticker + i }>{ cryptoAsset[property] }</Td> 
+                        })
+                      }
+                    </Tr>
+                  )
+                }) : null
               }
           </tbody>
         </Table>

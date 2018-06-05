@@ -3,6 +3,7 @@ import Media from 'react-media'
 import styled from 'styled-components'
 import MenuItems from './menuItems'
 import Overlay from './Overlay'
+import Burger from './Burger'
 
 const Div = styled.div`
   display: flex;
@@ -39,7 +40,8 @@ const NameDiv = Div.extend`
   background: linear-gradient(to right, #FFA900, #c21500); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   
   @media (max-width: 900px) {
-    height: 100%;
+    position: absolute;
+    z-index: 9010;
   }
 `
 
@@ -57,22 +59,27 @@ class Navbar extends Component {
   constructor(props) {
     super(props)
     this.state = { overlayActive: false }
-    this.toggleOverlay = this.toggleOverlay.bind(this)
   }
 
-  toggleOverlay() {
+  toggleOverlay = () => {
     this.setState({ overlayActive: !this.state.overlayActive })
   }
 
   // full screen MenuItems component will need react-media to set it to display: none for small screens.
   render() {
-    const { toggleOverlay, location, menuItems } = this.props
+    const { location, menuItems } = this.props
     const { overlayActive } = this.state
     return(
       <ContainerDiv>
         <NameDiv>
-          { overlayActive ? <P onClick={ toggleOverlay }>X</P> : <P>Welcome</P> }
-        </NameDiv>
+          <Media query="(min-width: 900px)">
+            { matches =>
+              matches 
+              ? <P>Welcome</P>
+              : <Burger toggle={ this.toggleOverlay } active={ overlayActive }/>
+            }
+          </Media>
+        </NameDiv> 
         <Media query="(min-width: 900px)">
           { matches =>
             matches 
@@ -81,7 +88,7 @@ class Navbar extends Component {
           }
         </Media>
         { overlayActive &&
-          <Overlay onClose={ toggleOverlay }>
+          <Overlay onClose={ this.toggleOverlay }>
             <MenuItems location={ location } menuItems={ menuItems }/>
           </Overlay>
         }

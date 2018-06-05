@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 
@@ -67,7 +67,7 @@ const Input = ({ input, label, name, meta: { error, touched, active, pristine } 
   return (
     <Section>
       <Label style={ (active || !pristine) ? hidden : null }>{ label }</Label>  
-      <StyledInput style={ active ? focused : null } {...input}></StyledInput>
+      <StyledInput type="text" style={ active ? focused : null } { ...input }></StyledInput>
       <FormError>
         { touched && error }
       </FormError> 

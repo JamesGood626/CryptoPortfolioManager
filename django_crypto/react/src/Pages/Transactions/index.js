@@ -23,6 +23,14 @@ const ContainerDiv = styled.div`
   }
 `
 
+const LoadingDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`
+
 const OrderTypeDiv = styled.div`
   display: flex;
   justify-content: space-around;
@@ -149,9 +157,19 @@ class Transactions extends Component {
   // }
 
   render() {
-    if (this.props.buyOrderList) {
-      const buyOrderObj = this.props.buyOrderList[0]
-      if(buyOrderObj && this.state.buyOrderTitles.length === 0) {
+    const { buyOrderList, sellOrderList, refinedProfitLossTransactionList } = this.props
+    const { 
+      displayBuyOrders, 
+      displaySellOrders, 
+      displayActualizedPL, 
+      buyOrderTitles, 
+      sellOrderTitles, 
+      profitLossTransactionTitles 
+    } = this.state
+
+    if (buyOrderList) {
+      const buyOrderObj = buyOrderList[0]
+      if(buyOrderObj && buyOrderTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(buyOrderObj)
         let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
         this.setState((prevState, state) => ({
@@ -160,9 +178,9 @@ class Transactions extends Component {
       }
     }
     
-    if (this.props.sellOrderList) {
-      const sellOrderObj = this.props.sellOrderList[0]
-      if(sellOrderObj && this.state.sellOrderTitles.length === 0) {
+    if (sellOrderList) {
+      const sellOrderObj = sellOrderList[0]
+      if(sellOrderObj && sellOrderTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(sellOrderObj)
         let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
         this.setState((prevState, state) => ({
@@ -172,8 +190,8 @@ class Transactions extends Component {
     }
     
     if (this.props.refinedProfitLossTransactionList) {
-      const profitLossTransactionObj = this.props.refinedProfitLossTransactionList[0]
-      if(profitLossTransactionObj && this.state.profitLossTransactionTitles.length === 0) {
+      const profitLossTransactionObj = refinedProfitLossTransactionList[0]
+      if(profitLossTransactionObj && profitLossTransactionTitles.length === 0) {
         let keyList = Object.getOwnPropertyNames(profitLossTransactionObj)
         let newTitleArr = keyList.map(capitalizeTitles.handleSingleTitle.bind(capitalizeTitles))
         this.setState((prevState, state) => ({
@@ -181,20 +199,7 @@ class Transactions extends Component {
         }))
       }
     }
-        
-    const { 
-      displayBuyOrders, 
-      displaySellOrders, 
-      displayActualizedPL, 
-      buyOrderTitles, 
-      sellOrderTitles, 
-      profitLossTransactionTitles 
-    } = this.state
-    const { 
-      buyOrderList, 
-      sellOrderList, 
-      refinedProfitLossTransactionList 
-    } = this.props
+
     const selectedStyle = {
       'color': '#fcfafa',
       'background': '#c21500',
@@ -221,37 +226,43 @@ class Transactions extends Component {
       }
     }
 
-    return (
-      <ContainerDiv>
-        <OrderTypeDiv>
-          <DisplaySelectButton 
-            style={ displayBuyOrders ? selectedStyle : null } 
-            onClick={ (displaySellOrders || displayActualizedPL) ? this.selectDisplayType : null }
-          >
-            Buy Orders
-          </DisplaySelectButton>
-          <DisplaySelectButton 
-            style={ displaySellOrders ? selectedStyle : null } 
-            onClick={ (displayBuyOrders || displayActualizedPL) ? this.selectDisplayType : null }
-          >
-            Sell Orders
-          </DisplaySelectButton>
-          <DisplaySelectButton 
-            style={ displayActualizedPL ? selectedStyle : null } 
-            onClick={ (displayBuyOrders || displaySellOrders) ? this.selectDisplayType : null }
-          >
-            Actualized P/L
-          </DisplaySelectButton>
-        </OrderTypeDiv>
-        <TableContainerDiv>
-          <TransactionTable
-            buy_order_config={ displayBuyOrders && config.buy_order }
-            sell_order_config={ displaySellOrders && config.sell_order }
-            pl_transaction_config={ displayActualizedPL && config.pl_transaction }
-          />
-        </TableContainerDiv>
-      </ContainerDiv>
-    )
+    if((buyOrderList && buyOrderList !== 0) || 
+       (sellOrderList && sellOrderList !== 0) || 
+       (refinedProfitLossTransactionList && refinedProfitLossTransactionList !== 0)
+      ) {
+      return (
+        <ContainerDiv>
+          <OrderTypeDiv>
+            <DisplaySelectButton 
+              style={ displayBuyOrders ? selectedStyle : null } 
+              onClick={ (displaySellOrders || displayActualizedPL) ? this.selectDisplayType : null }
+            >
+              Buy Orders
+            </DisplaySelectButton>
+            <DisplaySelectButton 
+              style={ displaySellOrders ? selectedStyle : null } 
+              onClick={ (displayBuyOrders || displayActualizedPL) ? this.selectDisplayType : null }
+            >
+              Sell Orders
+            </DisplaySelectButton>
+            <DisplaySelectButton 
+              style={ displayActualizedPL ? selectedStyle : null } 
+              onClick={ (displayBuyOrders || displaySellOrders) ? this.selectDisplayType : null }
+            >
+              Actualized P/L
+            </DisplaySelectButton>
+          </OrderTypeDiv>
+          <TableContainerDiv>
+            <TransactionTable
+              buy_order_config={ displayBuyOrders && config.buy_order }
+              sell_order_config={ displaySellOrders && config.sell_order }
+              pl_transaction_config={ displayActualizedPL && config.pl_transaction }
+            />
+          </TableContainerDiv>
+        </ContainerDiv>
+      )
+    }
+    return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
   }
 }
 

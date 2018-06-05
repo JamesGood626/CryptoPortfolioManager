@@ -13,15 +13,32 @@ body {
   background-color: #fcfafa;
 }
 
+input {
+  color: #fcfafa;
+  font-family: 'Quattrocento', serif;
+}
+
+#burger {
+  position: absolute;
+  z-index: 9020;
+  height: 1.8rem;
+  width: 1.8rem;
+  fill: #fffbfc;
+}
+
+#burger:hover {
+    fill: #17CA4A;
+}
+
 .pieChartDimensions {
-  height: 45vh;
+  height: 40vh;
   width: 70vw;
 }
 
 .barChartDimensions {
-  height: 45vh;
+  height: 40vh;
   width: 70vw;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
   margin: 0;
 }
 

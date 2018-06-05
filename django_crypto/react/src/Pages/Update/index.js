@@ -46,7 +46,7 @@ const BuyButton = styled.button`
   width: 4rem;
   height: 2rem;
   margin: 0;
-  font-size: 2vh;
+  font-size: 0.7rem;
   line-height: 2rem;
   text-align: center;
   color: #fcfafa;
@@ -62,7 +62,7 @@ const BuyButton = styled.button`
     margin-right: 1.6rem;
   }
   @media (min-height: 740px) {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   &:hover {
@@ -77,7 +77,7 @@ const SellButton = styled.button`
   width: 4rem;
   height: 2rem;
   margin: 0;
-  font-size: 2vh;
+  font-size: 0.7rem;
   line-height: 2rem;
   text-align: center;
   color: #fcfafa;
@@ -94,7 +94,7 @@ const SellButton = styled.button`
   }
 
   @media (min-height: 740px) {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   &:hover {

@@ -2,21 +2,16 @@ import axios from 'axios'
 
 const historicalRateConversion = {
   getRatioDifference: function (historicalDataRate, price) {
-    // console.log('historicalDataRate: ', historicalDataRate)
-    // console.log('price: ', price)
-    // console.log(' the result of get ratio diff: ', (price - historicalDataRate)/historicalDataRate)
     return (price - historicalDataRate)/historicalDataRate
   },
   getTrueHistoricalRate: function (ratioDifference, apiHistoricalRate) {
-    // console.log('ratioDifference: ', ratioDifference)
-    // console.log('apiHistoricalRate: ', apiHistoricalRate)
     let trueHistoricalRate
     const extraneousAmount = Math.abs(ratioDifference * apiHistoricalRate)
     if (ratioDifference > 0) {
-      trueHistoricalRate = apiHistoricalRate - extraneousAmount
+      trueHistoricalRate = apiHistoricalRate + extraneousAmount
     }
     else {
-      trueHistoricalRate = apiHistoricalRate + extraneousAmount
+      trueHistoricalRate = apiHistoricalRate - extraneousAmount
     }
     return trueHistoricalRate
   },

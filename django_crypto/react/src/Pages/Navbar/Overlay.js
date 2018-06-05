@@ -14,13 +14,18 @@ const OverlayDiv = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 9000;
   display: flex;
   justify-content: center;
   height: 100vh;
   width: 100vw;
+  padding-top: 20%;
   background-color: #fcfafa;
   overflow: hidden;
+
+  @media (min-width: 400px) {
+    padding-top: 10%;
+  }
 
   @media (min-width: 900px) {
     display: none;
@@ -32,20 +37,13 @@ const OverlayDiv = styled.div`
 class Overlay extends Component {
   constructor(props) {
     super(props)
-    this.overlayContainer = document.createElement('div')
-    document.body.appendChild(this.overlayContainer)
-  }
-
-  componentWillUnmount() {
-    document.body.removeChild(this.overlayContainer)
   }
 
   render() {
-    return ReactDOM.createPortal(
+    return (
       <OverlayDiv className="overlay">
-        <Span onClick={ this.props.onClose }>X</Span>
         { this.props.children }
-      </OverlayDiv>, this.overlayContainer
+      </OverlayDiv>
     )
   }
 }

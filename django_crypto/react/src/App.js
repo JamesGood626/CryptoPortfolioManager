@@ -54,7 +54,6 @@ const Div = styled.div`
 class App extends Component {
   enterTransition = node => {
     let { action } = this.props.history
-    console.log(node)
 
     if (action === 'PUSH') {
       TweenMax.fromTo(node, 0.5, {x: -100, opacity: 0}, {x: 0, opacity: 1})

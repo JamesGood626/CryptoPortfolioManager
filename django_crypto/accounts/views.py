@@ -1,7 +1,5 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
 
 from rest_framework_jwt.serializers import JSONWebTokenSerializer
 from rest_framework.response import Response
@@ -25,7 +23,6 @@ class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
     permission_classes = [AllowAny]
 
-    @method_decorator(csrf_protect)
     def post(self, request):
         print(request.data)
         if request.user.is_authenticated:

@@ -30,6 +30,13 @@ const ContainerDiv = Div.extend`
   }
 `
 
+const LoadingDiv = Div.extend`
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`
+
 const ChartTypeDiv = styled.div`
   display: flex;
   justify-content: space-between;
@@ -223,8 +230,8 @@ class PortfolioPerformance extends Component {
       return (
         <ContainerDiv>
           <ChartTypeDiv>
-            <PieChartButton style={ showPieChart ? selectedStyle : null } onClick={ !showPieChart && this.toggleCharts }>Quantity</PieChartButton>
-            <BarChartButton style={ showBarChart ? selectedStyle : null } onClick={ !showBarChart && this.toggleCharts }>Percentage P/L</BarChartButton>
+            <PieChartButton style={ showPieChart ? selectedStyle : null } onClick={ !showPieChart ? this.toggleCharts : null }>Quantity</PieChartButton>
+            <BarChartButton style={ showBarChart ? selectedStyle : null } onClick={ !showBarChart ? this.toggleCharts : null }>Percentage P/L</BarChartButton>
           </ChartTypeDiv>
             { (pieChartData && showPieChart)
             ? <PieChart pieChartData={ pieChartData }/>
@@ -246,7 +253,7 @@ class PortfolioPerformance extends Component {
         </ContainerDiv>
       )
     }
-    return null
+    return <LoadingDiv><h2>Loading...</h2></LoadingDiv>
   }
 }
 

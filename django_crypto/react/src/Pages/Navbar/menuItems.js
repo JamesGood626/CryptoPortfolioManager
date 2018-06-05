@@ -10,14 +10,9 @@ const Nav = styled.nav`
   height: 100%;
   width: 16rem;
 
-
-  // @media (min-width: 600px) {
-  //   background-color: limegreen;
-  // }
-
-  // @media (min-width: 900px) {
-  //   background-color: purple;
-  // }  
+  @media (max-width: 900px) {
+    height: 95%;
+  }  
 `
 
 const NavDiv = styled.div`
@@ -70,3 +65,11 @@ const menuItems = ({ location, menuItems }) => {
 }
 
 export default menuItems
+
+{/* <Media query="(min-width: 900px)">
+          { matches =>
+            matches 
+            ? <MenuItems location={ location } menuItems={ menuItems }/>
+            : null
+          }
+        </Media> */}

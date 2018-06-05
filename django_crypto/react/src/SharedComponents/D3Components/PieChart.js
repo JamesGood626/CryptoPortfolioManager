@@ -5,39 +5,13 @@ class PieChart extends Component {
   componentDidMount = () => {
     if(this.pieChartSvg) {
       if(this.props.pieChartData) {
-        const svgDimensions = this.returnSvgDimensions()
         this.doD3Stuff(960, 500, this.props.pieChartData)
-        // window.addEventListener('resize', this.handleResize)
       }
     }
   }
 
-  // componentWillUnmount = () => {
-  //   window.removeEventListener('resize', this.handleResize)
-  // }
-
-  // handleResize = e => {
-  //   let newWidth = this.returnSvgDimensions()
-  //   this.doD3Stuff(newWidth, newWidth, this.props.pieChartData)
-  // }
-
-  returnSvgDimensions = () => {
-    if (window.innerWidth <= 480) {
-      return window.innerWidth/1.8
-    }
-    else if (window.innerWidth > 480 && window.innerWidth <= 768) {
-      return window.innerWidth/2.8
-    }
-    else if (window.innerWidth > 768 && window.innerWidth <= 1280) {
-      return window.innerWidth/4.5
-    }
-    else {
-      return window.innerWidth/5.4
-    }
-  }
-
   doD3Stuff = (height, width, data) => {
-    d3.selectAll("svg > *").remove()
+    // d3.selectAll("svg > *").remove()
 
     const div = d3.select(".tooltip")
     const pie = d3.pie()
@@ -67,24 +41,24 @@ class PieChart extends Component {
       .enter().append("g")
         .attr("class", "arc")
  
+    const totalQuantity = data.reduce((acc, curr) =>  acc += curr.number, 0)
     arc.append("path")
-        .attr("d", path)
-        .attr("fill", function(d) { return color(d.data.name) })
-        .on("mouseover", function(d) {
-          div.transition()
-            .duration(200)
-            .style("opacity", 1.0)
-          div.html(`${d.data.number} ${d.data.name} <br/> 45% of portfolio`)
-          .style("left", (d3.event.pageX - 120) + "px")
-          .style("top", (d3.event.pageY) + "px")
-        })
-        .on("mouseout", function(d) {
-          div.transition()
-            .duration(500)
-            .style("opacity", 0)
-        })
+      .attr("d", path)
+      .attr("fill", function(d) { return color(d.data.name) })
+      .on("mouseover", function(d) {
+        div.transition()
+          .duration(200)
+          .style("opacity", 1.0)
+        div.html(`${d.data.number} ${d.data.name} <br/> ${ ((d.data.number/totalQuantity) * 100).toFixed(2) }% of portfolio`)
+        .style("left", (d3.event.pageX - 120) + "px")
+        .style("top", (d3.event.pageY) + "px")
+      })
+      .on("mouseout", function(d) {
+        div.transition()
+          .duration(500)
+          .style("opacity", 0)
+      })
     
-
     arc.append("text")
         .classed("chart-text", true)
         .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")" })
@@ -96,7 +70,7 @@ class PieChart extends Component {
 
   render() {
     return [
-      <div class="tooltip"/>,
+      <div className="tooltip"/>,
       <svg className="pieChartDimensions" ref={x => this.pieChartSvg = x}></svg>
     ]
   }

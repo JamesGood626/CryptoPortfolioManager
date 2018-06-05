@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
@@ -31,7 +31,9 @@ if DEBUG:
 else:
     SECRET_KEY = os.environ['SECRET_KEY']
 
+# COMMENT IN FOR PROD
 ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com', '127.0.0.1']
+# COMMENT IN FOR DEV
 # ALLOWED_HOSTS = []
 
 # Application definition
@@ -57,7 +59,7 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     # 'localhost:3000',
     'crypto-portfolio-manager.herokuapp.com',
-    '127.0.0.1'
+    # '127.0.0.1',
     # 'http://localhost:8000',
 )
 
@@ -106,6 +108,7 @@ DATABASES = {
     #     'HOST': 'localhost',
     #     'PORT': '3306',
     # }
+    # COMMENT IN FOR PROD
     'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
@@ -162,11 +165,9 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'staticfiles')
-# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "static_root")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
-# MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn", "media_root")
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=1800)

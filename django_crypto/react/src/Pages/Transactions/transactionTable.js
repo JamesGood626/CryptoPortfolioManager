@@ -54,7 +54,6 @@ const transactionTable = ({ buy_order_config, sell_order_config, pl_transaction_
   if (config.list && config.list[0]) {
     var keys = Object.getOwnPropertyNames(config.list[0])
   }
-  console.log(config)
   if (config.list === null) {
     return <NotificationDiv>Have you initiated a transaction yet?</NotificationDiv>
   }

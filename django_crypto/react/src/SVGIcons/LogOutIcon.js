@@ -9,8 +9,8 @@ class LogOutIcon extends Component {
     }
     return (
       <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="2.2rem"
-	         height="2.2rem" style={ iconPadding } viewBox="0 0 256 256" enable-background="new 0 0 256 256">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M255.986,223.995v-192h-0.002c0.008-7.625-5.45-14.387-13.22-15.754
+	         height="2.2rem" style={ iconPadding } viewBox="0 0 256 256" enableBackground="new 0 0 256 256">
+        <path fillRule="evenodd" clipRule="evenodd" d="M255.986,223.995v-192h-0.002c0.008-7.625-5.45-14.387-13.22-15.754
           c-8.702-1.535-87.298-14.465-96.001-16c-8.701-1.535-16.999,4.275-18.533,12.979c-0.166,0.932-0.241,1.861-0.242,2.775H80.002
           c-8.837,0-16.001,7.164-16.001,16v32.004h16.001V31.995h47.983v192H80.002v-15.998H64.001v15.998
           c0,8.838,7.164,16.004,16.001,16.004h47.986c0.001,0.914,0.076,1.844,0.242,2.777c1.534,8.703,9.832,14.512,18.533,12.979
