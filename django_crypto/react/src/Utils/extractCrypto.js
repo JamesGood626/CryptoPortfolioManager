@@ -133,8 +133,10 @@ const extractCrypto = {
     let totalPriceFiat = cryptoList[i].quantity * price_usd
     // let totalPriceBtc = cryptoList[i].quantity * price_btc
     let gainLossFiat = totalPriceFiat - cryptoList[i].initial_investment_fiat
+    console.log('gainLossFiat: ', gainLossFiat)
     // let gainLossBtc = totalPriceBtc - cryptoList[i].initial_investment_btc
     let gainLossPercentageFiat = gainLossFiat/cryptoList[i].initial_investment_fiat
+    console.log('gainLossPercentageFiat: ', gainLossPercentageFiat)
 
     mergedCryptoObj.gain_loss_fiat = gainLossFiat.toFixed(2)
     //mergedCryptoObj.gain_loss_btc = gainLossBtc.toFixed(6)

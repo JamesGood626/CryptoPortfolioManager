@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
@@ -32,8 +32,8 @@ else:
     SECRET_KEY = os.environ['SECRET_KEY']
 
 # COMMENT IN FOR PROD
-ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com']
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['crypto-portfolio-manager.herokuapp.com']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -56,10 +56,10 @@ INSTALLED_APPS = [
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-    # 'localhost:3000',
-    'crypto-portfolio-manager.herokuapp.com',
+    'localhost:3000',
+    #'crypto-portfolio-manager.herokuapp.com',
     # '127.0.0.1',
-    # 'http://localhost:8000',
+    'http://localhost:8000',
 )
 
 MIDDLEWARE = [
@@ -100,16 +100,16 @@ WSGI_APPLICATION = 'django_crypto.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'crypto_portfolio',
-    #     'USER': 'crypto_portfolio_dev',
-    #     'PASSWORD': 'cryptoportfoliodev',
-    #     'HOST': 'localhost',
-    #     'PORT': '3306',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'crypto_portfolio',
+        'USER': 'crypto_portfolio_dev',
+        'PASSWORD': 'cryptoportfoliodev',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
     # COMMENT IN FOR PROD
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    # 'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 
@@ -194,13 +194,3 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
 }
-
-'''
-
-$ curl -X POST -d "username=testuser&password=zmxncb" http://localhost:8000/api/auth/token/
-
-
-
-curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/portfolio/crypto-asset/create
-
-'''

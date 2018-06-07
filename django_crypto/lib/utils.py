@@ -348,7 +348,11 @@ def create_or_update_crypto_asset(buy_order):
     exchange_fee_btc = buy_order.exchange_fee_btc
     exchange_fee_fiat = buy_order.exchange_fee_fiat
     initial_investment_btc = Decimal(quantity * purchase_price_btc) + Decimal(exchange_fee_btc)
+    print('quantity: ', quantity)
+    print('purchase_price_fiat: ', purchase_price_fiat)
+    print('Decimal(quantity * purchase_price_fiat): ', Decimal(quantity * purchase_price_fiat))
     initial_investment_fiat = Decimal(quantity * purchase_price_fiat) + Decimal(exchange_fee_fiat)
+    print('initial_investment_fiat: ', initial_investment_fiat)
 
     try:
         crypto_asset = CryptoAsset.objects.get(

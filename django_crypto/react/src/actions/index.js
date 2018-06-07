@@ -196,8 +196,8 @@ export const getBitcoinHistoricalRate = values => async dispatch => {
 }
 
 export const addNewCrypto = values => async dispatch => {
-  console.log("Values passed into addNewCrypto")
-  console.log(values)
+  // console.log("Values passed into addNewCrypto")
+  // console.log(values)
   if(localStorage['token']) {
     const AUTH_TOKEN = localStorage.getItem('token')
     if(values['buyOrder']) {
@@ -226,10 +226,24 @@ export const addNewCrypto = values => async dispatch => {
     else if(values['sellOrder']) {
       axios.post(`${ ADD_NEW_SELL_ORDER_URL }`, values, { headers: { Authorization: `JWT ${ AUTH_TOKEN }` } })
         .then(response => {
-          return response
+          dispatch({ type: SUBMIT_IN_PROGRESS, payload: false })
+          dispatch({ type: ADD_NEW_CRYPTO_SUCCESS, payload: true })
+          setTimeout(() => {
+              dispatch({ type: ADD_NEW_CRYPTO_SUCCESS, payload: false })
+          }, 3000)
         })
         .catch(error => {
-          return error
+          dispatch({ type: SUBMIT_IN_PROGRESS, payload: false })
+          if(error.response.status === 401) {
+            dispatch(signOutUser())
+          }
+          else {
+            dispatch({ type: ADD_NEW_CRYPTO_ERR, payload: true })
+            setTimeout(() => {
+                dispatch({ type: ADD_NEW_CRYPTO_ERR, payload: false })
+              }, 4000
+            )
+          }
         })
     }
   }

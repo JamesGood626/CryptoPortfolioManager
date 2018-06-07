@@ -10,16 +10,12 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_400_BAD_REQUEST
 )
-
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-
-
 from .models import (
     BuyOrder,
     SellOrder,
     ProfitLossTransaction
 )
-
 from .serializers import (
     BuyOrderCreateSerializer,
     SellOrderCreateSerializer,
@@ -27,7 +23,6 @@ from .serializers import (
     SellOrderListSerializer,
     ProfitLossTransactionListSerializer,
 )
-
 from portfolio.models import CryptoAsset
 
 

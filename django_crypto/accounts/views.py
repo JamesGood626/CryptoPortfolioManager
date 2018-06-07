@@ -41,7 +41,7 @@ class UserCreateAPIView(CreateAPIView):
         else:
             serializer = UserCreateSerializer(data=request.data)
             # Will need to ensure I handle error cases appropriately to send back
-            # # to the client side app.
+            # to the client side app.
             if not serializer.is_valid():
                 # Need to determine what happens between serializer
                 # ValidationError being raised and this line
